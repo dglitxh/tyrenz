@@ -22,12 +22,15 @@ func checkArgs (args []string, err string) error {
 }
 var todoCmd = &cobra.Command{
 	Use:   "todo",
-	Short: "command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-			and usage of using your command. For example:
+	Short: "A todo cli with multiple actions",
+	Long: ` This todo command has multiple actions to manage tasks
+these actions include....
+	- add (requires a todo name/title)
+	- list 
+	- done (requires an id)
+	- get  (requires an id)
+	- delete (requires an id)`,	
 
-			Callllll the mannn.`,
-			
 	Run: func(cmd *cobra.Command, args []string) {
 		tl.ReadTodo()
 		if len(args) > 0 {
@@ -59,7 +62,7 @@ var todoCmd = &cobra.Command{
 						fmt.Println(err)
 					}
 				default:
-					fmt.Println("please add an action")
+					fmt.Println(" Please add a valid action.")
 		}
 		} else {
 			fmt.Println("Please add an action \n  **actions include [add, list, delete, get]")
