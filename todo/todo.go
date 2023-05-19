@@ -29,7 +29,6 @@ func (tl *TodoList) Add (t, desc string, done bool) error {
 		Created: time.Now(),
 		Modified: time.Time{},
 	}
-    fmt.Println(tl, "lissst")
 	*tl = append(*tl, item)
 	tl.SaveTodo()
 	return nil
@@ -100,7 +99,7 @@ func (tl *TodoList) ToggleComplete (num string) error {
 }
 	*tl = list
 	tl.SaveTodo()
-	fmt.Println("task complete succesfully toggled")
+	fmt.Println("task completion succesfully toggled")
 	return nil
 }
 
