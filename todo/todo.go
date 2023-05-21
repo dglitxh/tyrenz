@@ -10,23 +10,36 @@ import (
 	"time"
 )
 var fn string = "todo.json"
-
+var reader *bufio.Reader = bufio.NewReader(os.Stdin)
 type Todo struct {
 	Id int `json:"id"`
 	Title string `json:"title"`
 	Description string `json:"description"`
-	Done  bool `json:"done"`
+	Completed  bool `json:"completed"`
 	Created time.Time `json:"created"`
 	Modified time.Time `json:"modified"`
 }
 
 type TodoList []Todo
 
-func (tl *TodoList) Add (t, desc string, done bool) error {
+func (tl *TodoList) AddTodo (completed bool) error {
+
+	fmt.Println("Please enter new todo title: ")
+	title, err1 := reader.ReadString('\n'); if err1 != nil {
+		fmt.Println(err1)
+		return err1
+	}
+	fmt.Println("Please enter todo description: ")
+	desc, err2 := reader.ReadString('\n'); if err2 != nil {
+		fmt.Println(err2)
+		return err2
+	}
+	desc = strings.TrimSuffix(desc, "\n")
+	title = strings.TrimSuffix(title, "\n")
 	item := Todo{
 		Id: len(*tl)+1,
-		Title: t,
-		Done: done,
+		Title: title,
+		Completed: completed,
 		Description: desc,
 		Created: time.Now(),
 		Modified: time.Time{},
@@ -96,7 +109,7 @@ func (tl *TodoList) ToggleComplete (id string) error {
 			return err
 		}
 		if v.Id == i {
-			v.Done = !v.Done
+			v.Completed = !v.Completed
 		}
 		list = append(list, v)	
 }
@@ -116,15 +129,17 @@ func (tl *TodoList) SaveTodo() error {
 
 func (tl *TodoList) EditTodo(id string) error {
 	list := make([]Todo, 0)
-	var desc string
-	var title string
-	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Println("Please enter new title: ")
-	title, _ = reader.ReadString('\n')
-	fmt.Println("Please enter new todo: ")
-	desc, _ = reader.ReadString('\n')
-
+	title, err1 := reader.ReadString('\n'); if err1 != nil {
+		fmt.Println(err1)
+		return err1
+	}
+	fmt.Println("Please enter new description: ")
+	desc, err2 := reader.ReadString('\n'); if err2 != nil {
+		fmt.Println(err2)
+		return err2
+	}
 	for _, v := range *tl {
 		i, err := strconv.Atoi(id); if err != nil {
 			return err
