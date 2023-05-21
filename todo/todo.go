@@ -1,10 +1,12 @@
 package todo
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 var fn string = "todo.json"
@@ -31,6 +33,7 @@ func (tl *TodoList) Add (t, desc string, done bool) error {
 	}
 	*tl = append(*tl, item)
 	tl.SaveTodo()
+	fmt.Println("Task added succesfully.")
 	return nil
 }
 
@@ -111,3 +114,33 @@ func (tl *TodoList) SaveTodo() error {
 	return nil
 }
 
+func (tl *TodoList) EditTodo(id string) error {
+	list := make([]Todo, 0)
+	var desc string
+	var title string
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println("Please enter new title: ")
+	title, _ = reader.ReadString('\n')
+	fmt.Println("Please enter new todo: ")
+	desc, _ = reader.ReadString('\n')
+
+	for _, v := range *tl {
+		i, err := strconv.Atoi(id); if err != nil {
+			return err
+		}
+		if v.Id == i {
+			if len(desc) > 0{
+				v.Description = strings.TrimSuffix(desc, "\n")
+			}
+			if len(title) > 0{
+				v.Title = strings.TrimSuffix(title, "\n")
+			}
+		}
+		list = append(list, v)	
+}
+    *tl = list
+	tl.SaveTodo()
+	fmt.Println("Task updated succesfully")
+	return nil
+}
