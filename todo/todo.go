@@ -55,9 +55,9 @@ func (tl *TodoList) ListTodo () error {
   return nil
 }
 
-func (tl *TodoList) GetTodo (num string) error {
+func (tl *TodoList) GetTodo (id string) error {
 	for _, v := range *tl {
-		i, err := strconv.Atoi(num); if err != nil {
+		i, err := strconv.Atoi(id); if err != nil {
 			return err
 		}
 		if v.Id == i {
@@ -70,10 +70,10 @@ func (tl *TodoList) GetTodo (num string) error {
   return nil
 }
 
-func (tl *TodoList) DeleteTodo (num string) error {
+func (tl *TodoList) DeleteTodo (id string) error {
 	list := make([]Todo, 0)
 	for _, v := range *tl {
-		i, err := strconv.Atoi(num); if err != nil {
+		i, err := strconv.Atoi(id); if err != nil {
 			return err
 		}
 		if v.Id != i {
@@ -86,10 +86,10 @@ func (tl *TodoList) DeleteTodo (num string) error {
 	return nil
 }
 
-func (tl *TodoList) ToggleComplete (num string) error {
+func (tl *TodoList) ToggleComplete (id string) error {
 	list := make([]Todo, 0)
 	for _, v := range *tl {
-		i, err := strconv.Atoi(num); if err != nil {
+		i, err := strconv.Atoi(id); if err != nil {
 			return err
 		}
 		if v.Id == i {
@@ -110,3 +110,4 @@ func (tl *TodoList) SaveTodo() error {
 	os.WriteFile(fn, []byte(it), 0644)
 	return nil
 }
+
