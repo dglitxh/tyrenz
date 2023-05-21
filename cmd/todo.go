@@ -61,6 +61,12 @@ these actions include....
 					}else {
 						fmt.Println(err)
 					}
+				case "edit":
+					if err := checkArgs(args, "please add an index."); err == nil {
+						tl.EditTodo(args[1])
+					}else {
+						fmt.Println(err)
+					}
 				default:
 					fmt.Println(" Please add a valid action.")
 		}
@@ -76,7 +82,7 @@ func init() {
 	
 	rootCmd.AddCommand(todoCmd)
 	todoCmd.Flags().BoolVarP(&complete, "complete", "c", false, "task is done?")
-	todoCmd.Flags().StringVarP(&description, "description", "d", "this is a task", "describes the task")
+	todoCmd.Flags().StringVarP(&description, "description", "d", "", "describes the task")
 
 
 }
