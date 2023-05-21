@@ -36,11 +36,7 @@ these actions include....
 		if len(args) > 0 {
 			switch args[0] {
 				case "add": 
-				if err := checkArgs(args, "please add a todo title."); err == nil {
-						tl.Add(args[1], description, complete)
-					} else {
-						fmt.Println(err)
-					}
+					tl.AddTodo(complete)
 				case "list":
 					tl.ListTodo()
 				case "get":
@@ -55,7 +51,7 @@ these actions include....
 					} else {
 						fmt.Println(err)
 					}
-				case "done":
+				case "complete":
 					if err := checkArgs(args, "please add an index."); err == nil {
 						tl.ToggleComplete(args[1])
 					}else {
