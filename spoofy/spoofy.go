@@ -7,26 +7,28 @@ import (
 	"strings"
 )
 
-func Create (ext string, paste bool) error {
+func Spoof (ext, fn string, paste bool) error {
 	scanner := bufio.NewScanner(os.Stdin)
 	var doc string
-	var emt int
-	fmt.Println("****Press enter key 3 times to complete text.***")
+	var empty int
+	fmt.Println(`**** type "end..." (on a new line) after pasting text, to exit when in paste mode. ***`)
 	fmt.Println("Enter text here: ")
 	for scanner.Scan() {
 		line := scanner.Text()
 		if len(line) < 1 {
-			emt += 1
+			empty += 1
 			if !paste {
 				break
 			}
-			if emt >= 5 || strings.Trim(line, " ") == "end..." {
+			if empty >= 15 {
 				break
 			}
 		}else {
-			emt = 0
+			if strings.Trim(line, " ")=="end..." {
+				break
+			}
+			empty = 0
 		}	
-		fmt.Println(strings.Trim(line, " "))
 		doc += line+"\n"
 	}
 	
@@ -34,7 +36,7 @@ func Create (ext string, paste bool) error {
 		fmt.Println(scanner.Err(), "scanner error")
 	}
 	if len(doc) != 0 {
-		if err := os.WriteFile("file."+ext, []byte(doc), 0644); err != nil {
+		if err := os.WriteFile(fn+"."+ext, []byte(doc), 0644); err != nil {
 		fmt.Println(err)
 		return err
 	}
