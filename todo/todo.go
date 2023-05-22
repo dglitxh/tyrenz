@@ -120,7 +120,7 @@ func (tl *TodoList) ToggleComplete (id string) error {
 }
 
 func (tl *TodoList) SaveTodo() error {
-	it, err := json.Marshal(tl); if err != nil {
+	it, err := json.MarshalIndent(tl, " ", " "); if err != nil {
 		return err
 	}
 	os.WriteFile(fn, []byte(it), 0644)
