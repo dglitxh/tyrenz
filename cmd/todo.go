@@ -27,8 +27,9 @@ var todoCmd = &cobra.Command{
 	Short: "A todo cli with multiple actions",
 	Long: ` This todo command has multiple actions to manage tasks
 these actions include....
-	- add (requires a todo name/title)
+	- add 
 	- list 
+	- edit (requires an id)
 	- done (requires an id)
 	- get  (requires an id)
 	- delete (requires an id)`,	
@@ -77,11 +78,8 @@ these actions include....
 
 
 func init() {
-	
 	rootCmd.AddCommand(todoCmd)
 	todoCmd.Flags().BoolVarP(&complete, "complete", "c", false, "task is done?")
 	todoCmd.Flags().StringVarP(&description, "description", "d", "", "describes the task")
 	todoCmd.Flags().StringVarP(&todoFn, "name", "n", "todo", "name for the todo file.")
-
-
 }
