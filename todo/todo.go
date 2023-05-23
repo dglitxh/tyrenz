@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 )
-var fn string = "todo.json"
+
 var reader *bufio.Reader = bufio.NewReader(os.Stdin)
 type Todo struct {
 	Id int `json:"id"`
@@ -22,7 +22,7 @@ type Todo struct {
 
 type TodoList []Todo
 
-func (tl *TodoList) AddTodo (completed bool) error {
+func (tl *TodoList) AddTodo (completed bool, fn string) error {
 
 	fmt.Println("Please enter new todo title: ")
 	title, err1 := reader.ReadString('\n'); if err1 != nil {
@@ -45,12 +45,12 @@ func (tl *TodoList) AddTodo (completed bool) error {
 		Modified: time.Time{},
 	}
 	*tl = append(*tl, item)
-	tl.SaveTodo()
+	tl.SaveTodo(fn+".json")
 	fmt.Println("Task added succesfully.")
 	return nil
 }
 
-func (tl *TodoList) ReadTodo () error {
+func (tl *TodoList) ReadTodo (fn string) error {
 
 	f, err := os.ReadFile(fn); if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (tl *TodoList) GetTodo (id string) error {
   return nil
 }
 
-func (tl *TodoList) DeleteTodo (id string) error {
+func (tl *TodoList) DeleteTodo (id, fn string) error {
 	list := make([]Todo, 0)
 	for _, v := range *tl {
 		i, err := strconv.Atoi(id); if err != nil {
@@ -97,12 +97,12 @@ func (tl *TodoList) DeleteTodo (id string) error {
 		}
 	}
     *tl = list
-	tl.SaveTodo()
+	tl.SaveTodo(fn+".json")
 	fmt.Println("task deleted succesfully")
 	return nil
 }
 
-func (tl *TodoList) ToggleComplete (id string) error {
+func (tl *TodoList) ToggleComplete (id, fn string) error {
 	list := make([]Todo, 0)
 	for _, v := range *tl {
 		i, err := strconv.Atoi(id); if err != nil {
@@ -110,16 +110,17 @@ func (tl *TodoList) ToggleComplete (id string) error {
 		}
 		if v.Id == i {
 			v.Completed = !v.Completed
+			v.Modified = time.Now()
 		}
 		list = append(list, v)	
 }
 	*tl = list
-	tl.SaveTodo()
+	tl.SaveTodo(fn+".json")
 	fmt.Println("task completion succesfully toggled")
 	return nil
 }
 
-func (tl *TodoList) SaveTodo() error {
+func (tl *TodoList) SaveTodo(fn string) error {
 	it, err := json.MarshalIndent(tl, " ", " "); if err != nil {
 		return err
 	}
@@ -127,7 +128,7 @@ func (tl *TodoList) SaveTodo() error {
 	return nil
 }
 
-func (tl *TodoList) EditTodo(id string) error {
+func (tl *TodoList) EditTodo(id, fn string) error {
 	list := make([]Todo, 0)
 
 	fmt.Println("Please enter new title: ")
@@ -151,11 +152,12 @@ func (tl *TodoList) EditTodo(id string) error {
 			if len(title) > 0{
 				v.Title = strings.TrimSuffix(title, "\n")
 			}
+			v.Modified = time.Now()
 		}
 		list = append(list, v)	
 }
     *tl = list
-	tl.SaveTodo()
+	tl.SaveTodo(fn+".json")
 	fmt.Println("Task updated succesfully")
 	return nil
 }
