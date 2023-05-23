@@ -34,11 +34,11 @@ these actions include....
 	- delete (requires an id)`,	
 
 	Run: func(cmd *cobra.Command, args []string) {
-		tl.ReadTodo()
+		tl.ReadTodo(todoFn)
 		if len(args) > 0 {
 			switch args[0] {
 				case "add": 
-					tl.AddTodo(complete)
+					tl.AddTodo(complete, todoFn)
 				case "list":
 					tl.ListTodo()
 				case "get":
@@ -49,19 +49,19 @@ these actions include....
 					}
 				case "delete":
 					if err := checkArgs(args, "please add an index."); err == nil {
-						tl.DeleteTodo(args[1])
+						tl.DeleteTodo(args[1], todoFn)
 					} else {
 						fmt.Println(err)
 					}
 				case "complete":
 					if err := checkArgs(args, "please add an index."); err == nil {
-						tl.ToggleComplete(args[1])
+						tl.ToggleComplete(args[1], todoFn)
 					}else {
 						fmt.Println(err)
 					}
 				case "edit":
 					if err := checkArgs(args, "please add an index."); err == nil {
-						tl.EditTodo(args[1])
+						tl.EditTodo(args[1], todoFn)
 					}else {
 						fmt.Println(err)
 					}
@@ -81,7 +81,7 @@ func init() {
 	rootCmd.AddCommand(todoCmd)
 	todoCmd.Flags().BoolVarP(&complete, "complete", "c", false, "task is done?")
 	todoCmd.Flags().StringVarP(&description, "description", "d", "", "describes the task")
-	todoCmd.Flags().StringVarP(&todoFn, "name", "n", "todo", "name for the file to be spoofed.")
+	todoCmd.Flags().StringVarP(&todoFn, "name", "n", "todo", "name for the todo file.")
 
 
 }
