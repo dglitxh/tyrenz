@@ -14,6 +14,8 @@ import (
 var complete bool
 var description string
 var tl todo.TodoList
+var todoFn string
+
 func checkArgs (args []string, err string) error {
 	if len(args) < 2 {
 		return errors.New(err)
@@ -79,6 +81,7 @@ func init() {
 	rootCmd.AddCommand(todoCmd)
 	todoCmd.Flags().BoolVarP(&complete, "complete", "c", false, "task is done?")
 	todoCmd.Flags().StringVarP(&description, "description", "d", "", "describes the task")
+	todoCmd.Flags().StringVarP(&todoFn, "name", "n", "todo", "name for the file to be spoofed.")
 
 
 }
