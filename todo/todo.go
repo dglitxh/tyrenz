@@ -160,4 +160,4 @@ func (tl *TodoList) EditTodo(id, fn string) error {
 	tl.SaveTodo(fn+".json")
 	fmt.Println("Task updated succesfully")
 	return nil
-}
+} 
