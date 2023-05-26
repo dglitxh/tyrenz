@@ -8,7 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dglitxh/trentz/todo"
+	"github.com/dglitxh/tyrenz/todo"
 	"github.com/spf13/cobra"
 )
 var complete bool

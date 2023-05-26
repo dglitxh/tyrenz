@@ -1,4 +1,4 @@
-module github.com/dglitxh/trentz
+module github.com/dglitxh/tyrenz
 
 go 1.18
 

@@ -7,7 +7,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/dglitxh/trentz/spoofy"
+	"github.com/dglitxh/tyrenz/spoofy"
 	"github.com/spf13/cobra"
 )
 var ext string

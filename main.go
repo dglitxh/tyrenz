@@ -4,7 +4,7 @@ Copyright © 2023 ydzly
 */
 package main
 
-import "github.com/dglitxh/trentz/cmd"
+import "github.com/dglitxh/tyrenz/cmd"
 
 func main() {
 	cmd.Execute()
