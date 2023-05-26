@@ -9,9 +9,15 @@ type File struct {
 	file fs.File
 } 
 
-type MyFiles []File
 
-func (f *MyFiles) Search (item string) error {
+
+func Search (item string) error {
 
 	return nil
+}
+
+func Crawl (dir string) []File {
+	var items []File
+	
+	return items
 }
