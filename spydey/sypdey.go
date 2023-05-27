@@ -1,7 +1,10 @@
 package spydey
 
 import (
+	"fmt"
 	"io/fs"
+	"os"
+	"path/filepath"
 )
 
 type File struct {
@@ -10,9 +13,17 @@ type File struct {
 } 
 
 
+func Gwd () string{
+	wd, err := os.Getwd(); if err != nil {
+		fmt.Println(err)
+	}
+	
+	return wd
+}
+
 
 func Search (item string) error {
-
+	
 	return nil
 }
 
