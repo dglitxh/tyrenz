@@ -11,8 +11,8 @@ func Spoof (ext, fn string, paste bool) error {
 	scanner := bufio.NewScanner(os.Stdin)
 	var doc string
 	var empty int
-	fmt.Println(`**** type "end..." (on a new line) after pasting text or press enter key 16 times,
-	   to exit when in paste mode. ***`)
+	fmt.Println(`** type "end..." (on a new line) after pasting text or press enter key 16 times,
+	   to exit when in paste mode. **`)
 	fmt.Println("Enter text here: ")
 	for scanner.Scan() {
 		line := scanner.Text()
