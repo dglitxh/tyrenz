@@ -23,7 +23,9 @@ func Gwd () string{
 
 
 func Search (item string) error {
-	
+	filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
+		return nil
+	})
 	return nil
 }
 
