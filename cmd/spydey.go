@@ -5,7 +5,6 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-
 	"github.com/dglitxh/tyrenz/spydey"
 	"github.com/spf13/cobra"
 )
@@ -16,7 +15,7 @@ var spydeyCmd = &cobra.Command{
 	Short: "A powerful file system crawler.",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		spydey.Search(args[0])
+		spydey.Find(args[0])
 	},
 }
 
