@@ -22,13 +22,14 @@ func Gwd () string{
 }
 
 
-func Search (name string) error {
+func Find (name string) error {
 	filepath.WalkDir(".", func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
 		if entry.Name() == name {
-			fmt.Println(entry, Gwd() )
+			fmt.Println(entry.Name(), "found @ ", Gwd()+"/"+path)
 		}
 		return nil
 	})
