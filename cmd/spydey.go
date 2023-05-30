@@ -16,7 +16,7 @@ var spydeyCmd = &cobra.Command{
 	Short: "A powerful file system crawler.",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		spydey.Search()
+		spydey.Search(args[0])
 	},
 }
 
