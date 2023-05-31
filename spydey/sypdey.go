@@ -1,7 +1,6 @@
 package spydey
 
 import (
-	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -31,7 +30,7 @@ func Find (name string) error {
 			return err
 		}
 		if entry.Name() == name {
-			fmt.Println(entry.Name(), "found @ ", Gwd()+"/"+path)
+			fmt.Println(entry.Name(), "found @", Gwd()+"/"+path)
 			isFound = true
 			fmt.Println(strings.Split(path, "/"), path)
 		}
@@ -39,7 +38,6 @@ func Find (name string) error {
 	})
 	 if  !isFound {
 		fmt.Println("File was not found in this directory")
-		return errors.New("File not found")
 	 }
 	return nil
 }
