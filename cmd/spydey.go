@@ -9,18 +9,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var allow bool
 // spydeyCmd represents the spydey command
 var spydeyCmd = &cobra.Command{
 	Use:   "spydey",
 	Short: "A powerful file system crawler.",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		spydey.Find(args[0])
-		spydey.Crawl()
+		// spydey.Find(args[0])
+		spydey.Crawl(allow)
 	},
 }
 
 func init() {
+	spydeyCmd.Flags().BoolVarP(&allow, "allow_hidden", "a", false, "crawl hidden files and dirs.")
 	rootCmd.AddCommand(spydeyCmd)
 	// Here you will define your flags and configuration settings.
 
