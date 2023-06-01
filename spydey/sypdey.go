@@ -42,8 +42,25 @@ func Find (name string) error {
 	return nil
 }
 
-func Crawl (dir string) []File {
-	var items []File
-	
-	return items
+func Crawl () []File {
+	tree := make(map[string][]string)
+	filepath.WalkDir(".", func(path string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		if entry.IsDir() {
+			tree[entry.Name()] = append(tree[entry.Name()], "")
+		}else {
+			dir_arr := strings.Split(path, "/")
+			if len(dir_arr) > 1 {
+				if _, ok := tree[path];  ok {
+					tree[path] = append(tree[path], path)
+				}
+			}
+		}
+		return nil
+	})
+	fmt.Println(tree)
+	return nil
 }
