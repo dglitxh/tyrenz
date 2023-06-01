@@ -1,6 +1,7 @@
 package spydey
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"os"
@@ -42,25 +43,38 @@ func Find (name string) error {
 	return nil
 }
 
-func Crawl () []File {
+
+
+func Crawl (allow_hidden bool) error{
 	tree := make(map[string][]string)
+	count := 0
 	filepath.WalkDir(".", func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
-		if entry.IsDir() {
-			tree[entry.Name()] = append(tree[entry.Name()], "")
+		dirs := (strings.Split(path, "/"))
+		dir := strings.Join(dirs[0:len(dirs)-1], "/")
+		isHidden := string(path[0]) == "." && len(path)>1
+		if !allow_hidden && isHidden {
+			count++
 		}else {
-			dir_arr := strings.Split(path, "/")
-			if len(dir_arr) > 1 {
-				if _, ok := tree[path];  ok {
-					tree[path] = append(tree[path], path)
-				}
+			if entry.IsDir()  {
+				tree[path] = append(tree[path], tree[path]...)
+			}else {
+			if _, ok := tree[dir]; ok {
+				tree[dir] = append(tree[dir], dirs[len(dirs)-1]) 
+			}else {
+				tree[dir] = append(tree[dir], tree[dir]...)
+			}
 			}
 		}
 		return nil
 	})
-	fmt.Println(tree)
+		it, err := json.MarshalIndent(tree, " ", " "); if err != nil {
+		return err
+	}
+	os.WriteFile("spydey.json", []byte(it), 0644)
+	fmt.Printf("%d hidden files were exempted, use '-a' flag to allow hidden files\n", count)
 	return nil
 }
