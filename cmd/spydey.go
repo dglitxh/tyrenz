@@ -16,6 +16,7 @@ var spydeyCmd = &cobra.Command{
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		spydey.Find(args[0])
+		spydey.Crawl()
 	},
 }
 
