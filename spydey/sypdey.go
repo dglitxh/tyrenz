@@ -65,13 +65,14 @@ func Crawl (allow_hidden bool) error{
 			if _, ok := tree[dir]; ok {
 				tree[dir] = append(tree[dir], dirs[len(dirs)-1]) 
 			}else {
+				fmt.Println(dir)
 				tree[dir] = append(tree[dir], tree[dir]...)
 			}
 			}
 		}
 		return nil
 	})
-		it, err := json.MarshalIndent(tree, " ", " "); if err != nil {
+	it, err := json.MarshalIndent(tree, " ", " "); if err != nil {
 		return err
 	}
 	os.WriteFile("spydey.json", []byte(it), 0644)
