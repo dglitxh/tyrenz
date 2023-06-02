@@ -23,14 +23,18 @@ func Gwd () string{
 }
 
 
-func Find (name string) error {
+
+func Find (filename, dirname string) error {
 	var isFound bool
-	filepath.WalkDir(".", func(path string, entry fs.DirEntry, err error) error {
+	if err := os.Chdir(dirname); err != nil {
+		return err
+	}
+	filepath.WalkDir(dirname, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
-		if entry.Name() == name {
+		if entry.Name() == filename {
 			fmt.Println(entry.Name(), "found @", Gwd()+"/"+path)
 			isFound = true
 			fmt.Println(strings.Split(path, "/"), path)
