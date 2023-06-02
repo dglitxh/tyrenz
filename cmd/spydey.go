@@ -28,7 +28,7 @@ var spydeyCmd = &cobra.Command{
 						fmt.Println(err)
 					}
 				case "crawl":
-					spydey.Crawl(allow)
+					spydey.Crawl(allow, dir)
 				default:
 					fmt.Println(" Please add a valid action.")
 		}
