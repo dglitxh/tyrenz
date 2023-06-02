@@ -84,6 +84,7 @@ func Crawl (allow_hidden bool, dirname string) error{
 		return err
 	}
 	os.WriteFile("spydey.json", []byte(it), 0644)
+	fmt.Println(string(it), "\n\n*json file can be found in specified directory")
 	fmt.Printf("%d hidden files were exempted, use '-a' flag to allow hidden files\n", count)
 	return nil
 }
