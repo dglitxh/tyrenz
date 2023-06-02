@@ -26,6 +26,7 @@ func Gwd () string{
 
 func Find (filename, dirname string) error {
 	var isFound bool
+	similar := make(map[string]string)
 	if err := os.Chdir(dirname); err != nil {
 		return err
 	}
@@ -35,13 +36,22 @@ func Find (filename, dirname string) error {
 			return err
 		}
 		if entry.Name() == filename {
-			fmt.Println(entry.Name(), "found @", Gwd()+"/"+path)
+			fmt.Fprintf(os.Stdin, "[%s] found at %s/%s \n", entry.Name(), Gwd(), path)
 			isFound = true
+		}else if strings.Contains(entry.Name(), filename) && !isFound{
+			similar[entry.Name()] = Gwd()+"/"+path
 		}
 		return nil
 	})
 	 if  !isFound {
+		fmt.Printf("Exact entry not found but these might help: \n\n")
+		if len(similar) != 0 {
+			for k, v := range similar {
+				fmt.Printf("[%s] found at %s \n\n", k, v)
+			}
+		}else {
 		fmt.Println("File was not found in this directory")
+		}
 	 }
 	return nil
 }
