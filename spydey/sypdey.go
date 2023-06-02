@@ -49,10 +49,13 @@ func Find (filename, dirname string) error {
 
 
 
-func Crawl (allow_hidden bool) error{
+func Crawl (allow_hidden bool, dirname string) error{
+	if err := os.Chdir(dirname); err != nil {
+		return err
+	}
 	tree := make(map[string][]string)
 	count := 0
-	filepath.WalkDir(".", func(path string, entry fs.DirEntry, err error) error {
+	filepath.WalkDir(dirname, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println(err)
 			return err
