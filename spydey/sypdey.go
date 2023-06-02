@@ -29,7 +29,7 @@ func Find (filename, dirname string) error {
 	if err := os.Chdir(dirname); err != nil {
 		return err
 	}
-	filepath.WalkDir(dirname, func(path string, entry fs.DirEntry, err error) error {
+	filepath.WalkDir(".", func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println(err)
 			return err
@@ -37,7 +37,6 @@ func Find (filename, dirname string) error {
 		if entry.Name() == filename {
 			fmt.Println(entry.Name(), "found @", Gwd()+"/"+path)
 			isFound = true
-			fmt.Println(strings.Split(path, "/"), path)
 		}
 		return nil
 	})
@@ -51,11 +50,12 @@ func Find (filename, dirname string) error {
 
 func Crawl (allow_hidden bool, dirname string) error{
 	if err := os.Chdir(dirname); err != nil {
+		fmt.Println(err)
 		return err
 	}
 	tree := make(map[string][]string)
 	count := 0
-	filepath.WalkDir(dirname, func(path string, entry fs.DirEntry, err error) error {
+	filepath.WalkDir(".", func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println(err)
 			return err
@@ -80,6 +80,7 @@ func Crawl (allow_hidden bool, dirname string) error{
 		return nil
 	})
 	it, err := json.MarshalIndent(tree, " ", " "); if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	os.WriteFile("spydey.json", []byte(it), 0644)
