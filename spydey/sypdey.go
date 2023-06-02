@@ -35,6 +35,10 @@ func Find (filename, dirname string) error {
 			fmt.Println(err)
 			return err
 		}
+		if !entry.IsDir() {
+			tmp := strings.Split(path, "/")
+			path = strings.Join(tmp[0:len(tmp)-1], "/")
+		}
 		if entry.Name() == filename {
 			fmt.Fprintf(os.Stdin, "[%s] found at %s/%s \n", entry.Name(), Gwd(), path)
 			isFound = true
