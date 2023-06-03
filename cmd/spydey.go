@@ -17,7 +17,9 @@ var dir string
 var spydeyCmd = &cobra.Command{
 	Use:   "spydey",
 	Short: "A powerful file system crawler.",
-	Long: ``,
+	Long: `A cutting edge file system crawling cli applications that can 
+	create, search, crawl and many more 
+  **actions include [crawl, find]`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) > 0 {
 			switch args[0] {
