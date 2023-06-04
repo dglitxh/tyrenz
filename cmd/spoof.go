@@ -34,4 +34,5 @@ func init() {
 	spoofCmd.Flags().StringVarP(&ext, "extension", "e", "txt", "extension for the file to be spoofed.")
 	spoofCmd.Flags().BoolVarP(&paste, "paste", "p", false, "activates paste mode where up to 15 blank lines can be allowed")
 	spoofCmd.Flags().StringVarP(&fn, "name", "n", "file", "name for the file to be spoofed.")
+	
 }

@@ -32,7 +32,7 @@ var spydeyCmd = &cobra.Command{
 				case "crawl":
 					spydey.Crawl(allow, dir)
 				default:
-					fmt.Println(" Please add a valid action.")
+					fmt.Println("Please add a valid action.")
 		}
 		} else {
 			fmt.Println("Please add an action \n  **actions include [crawl, find]")
@@ -44,5 +44,4 @@ func init() {
 	spydeyCmd.Flags().BoolVarP(&allow, "allow_hidden", "a", false, "crawl hidden files and dirs.")
 	spydeyCmd.Flags().StringVarP(&dir, "directory", "d", ".", "add a root directory for operations.")
 	rootCmd.AddCommand(spydeyCmd)
-	
 }
