@@ -13,6 +13,7 @@ import (
 var ext string
 var paste bool
 var fn string
+var spfdir string
 // spoofCmd represents the spoof command
 var spoofCmd = &cobra.Command{
 	Use:   "spoof",
@@ -25,13 +26,14 @@ var spoofCmd = &cobra.Command{
 		                       *the choice is yours*`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("spoofing.......")
-		spoofy.Spoof(ext, fn, paste)
+		spoofy.Spoof(ext, fn, dir, paste)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(spoofCmd)
 	spoofCmd.Flags().StringVarP(&ext, "extension", "e", "txt", "extension for the file to be spoofed.")
+	spoofCmd.Flags().StringVarP(&spfdir, "directory", "d", ".", "specify directory to save file")
 	spoofCmd.Flags().BoolVarP(&paste, "paste", "p", false, "activates paste mode where up to 15 blank lines can be allowed")
 	spoofCmd.Flags().StringVarP(&fn, "name", "n", "file", "name for the file to be spoofed.")
 	
