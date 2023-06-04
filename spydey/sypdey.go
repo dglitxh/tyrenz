@@ -86,7 +86,6 @@ func Crawl (allow_hidden bool, dirname string) error{
 			if _, ok := tree[dir]; ok {
 				tree[dir] = append(tree[dir], dirs[len(dirs)-1]) 
 			}else {
-				fmt.Println(dir)
 				tree[dir] = append(tree[dir], tree[dir]...)
 			}
 			}
