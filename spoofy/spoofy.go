@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+
+
 func Spoof (ext, fn, dir string, paste bool) error {
 	scanner := bufio.NewScanner(os.Stdin)
 	var doc string
