@@ -35,3 +35,11 @@ type Config struct {
 	Category string
 	State int
 }
+
+var (
+	ErrNoIntervals = errors.New("No intervals")
+	ErrIntervalNotRunning = errors.New("Interval not running")
+	ErrIntervalCompleted = errors.New("Interval is completed or cancelled")
+	ErrInvalidState = errors.New("Invalid State")
+	ErrInvalidID = errors.New("Invalid ID")
+)
