@@ -35,11 +35,11 @@ type Config struct {
 }
 
 var (
-	ErrNoIntervals = errors.New("No intervals")
-	ErrIntervalNotRunning = errors.New("Interval not running")
-	ErrIntervalCompleted = errors.New("Interval is completed or cancelled")
-	ErrInvalidState = errors.New("Invalid State") 
-	ErrInvalidID = errors.New("Invalid ID")
+	ErrNoIntervals = errors.New("no intervals")
+	ErrIntervalNotRunning = errors.New("interval not running")
+	ErrIntervalCompleted = errors.New("interval is completed or cancelled")
+	ErrInvalidState = errors.New("invalid itate") 
+	ErrInvalidID = errors.New("invalid id")
 )
 
 func Tick () {
