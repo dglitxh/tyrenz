@@ -1,9 +1,12 @@
 package pomodoro
 
 import (
+	"context"
 	"errors"
 	"time"
 )
+
+type Callback func(Config)
 
 const (
 	CatPomodoro = "Pomodoro"
@@ -12,10 +15,10 @@ const (
 )
 
 type Actions interface {
-	Create() (string, error)
-	Update() (string, error)
-	GetById() (string, error)
-	Delete() (string, error)
+	Create(c Config) (string, error)
+	Update(c Config) (string, error)
+	GetById(id int) (string, error)
+	Delete(id int) (string, error)
 }
 
 const (
@@ -38,10 +41,14 @@ var (
 	ErrNoIntervals = errors.New("no intervals")
 	ErrIntervalNotRunning = errors.New("interval not running")
 	ErrIntervalCompleted = errors.New("interval is completed or cancelled")
-	ErrInvalidState = errors.New("invalid itate") 
+	ErrInvalidState = errors.New("invalid state") 
 	ErrInvalidID = errors.New("invalid id")
 )
 
-func Tick () {
+func Tick (ctx context.Context, id int, conf *Config, start, periodic, end Callback) error {
 	
+	ticker:= time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+
 }
