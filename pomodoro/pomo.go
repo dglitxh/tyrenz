@@ -74,6 +74,11 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 			periodic(i)
 		case <- expire:
 			i.State = StateDone
+			end(i)
+			return instance.action.Update(i)
+		case <- ctx.Done():
+			i.State = StateCancelled
+			return instance.action.Update(i)
 			
 		}
 	}
