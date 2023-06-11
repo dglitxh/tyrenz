@@ -9,7 +9,7 @@ import (
 type Callback func(Config)
 
 const (
-	CatConfig = "Config"
+	CatPomodoro = "Pomodoro"
 	CatShortBreak = "ShortBreak"
 	CatLongBreak = "LongBreak"
 )
@@ -83,4 +83,33 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 		}
 	}
 
+}
+
+func newInstance(inst Instance, pomodoro, longbrk, shortbrk int) *Instance {
+	i := &Instance{
+		action: inst.action,
+		conf: inst.conf,
+	}
+	switch i.conf.Category {
+		case CatPomodoro:
+			if pomodoro < 1 {
+				i.conf.Duration = time.Minute * 25
+			}else {
+				i.conf.Duration = time.Minute * time.Duration(pomodoro)
+			}
+		case CatShortBreak:
+			if shortbrk  < 1 {
+				i.conf.Duration = time.Minute * 5
+			}else {
+				i.conf.Duration = time.Minute * time.Duration(shortbrk)
+			}
+		case CatLongBreak:
+			if longbrk  < 1 {
+				i.conf.Duration = time.Minute * 15
+			}else {
+				i.conf.Duration = time.Minute * time.Duration(longbrk)
+			}
+	}
+
+	return i
 }
