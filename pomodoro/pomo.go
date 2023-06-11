@@ -6,18 +6,18 @@ import (
 	"time"
 )
 
-type Callback func(Pomodoro)
+type Callback func(Config)
 
 const (
-	CatPomodoro = "Pomodoro"
+	CatConfig = "Config"
 	CatShortBreak = "ShortBreak"
 	CatLongBreak = "LongBreak"
 )
 
 type Actions interface {
-	Create(c Pomodoro) (string, error)
-	Update(c Pomodoro) (string, error)
-	GetById(id int) (Pomodoro, error)
+	Create(c Config) (string, error)
+	Update(c Config) (string, error)
+	GetById(id int) (Config, error)
 	Delete(id int) (string, error)
 }
 
@@ -29,7 +29,7 @@ const (
 	StateCancelled
 )
 
-type Pomodoro struct {
+type Config struct {
 	ID int
 	StartTime time.Time
 	Duration time.Duration
@@ -39,7 +39,8 @@ type Pomodoro struct {
 }
 
 type Instance struct {
-	repo Actions
+	conf Config
+	action   Actions
 }
 
 var (
@@ -50,15 +51,15 @@ var (
 	ErrInvalidID = errors.New("invalid id")
 )
 
-func Tick (ctx context.Context, id int, conf *Pomodoro, start, periodic, end Callback) error {
+func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end Callback) error {
 	
 	ticker:= time.NewTicker(time.Second)
 	defer ticker.Stop()
-	i, err := Instance.repo.Create()
+	i, err := &Instance.action.Create()
 	if err != nil {
 		return err
 	}
-	expire := time.After(conf.TimeLeft)
+	expire := time.After(instance.conf.TimeLeft)
 	start(i)
 
 }
