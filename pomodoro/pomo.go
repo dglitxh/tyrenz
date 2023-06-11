@@ -16,7 +16,7 @@ const (
 
 type Actions interface {
 	Create(c Config) (string, error)
-	Update(c Config) (string, error)
+	Update(c Config) (error)
 	GetById(id int) (Config, error)
 	Delete(id int) (string, error)
 }
@@ -55,11 +55,27 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 	
 	ticker:= time.NewTicker(time.Second)
 	defer ticker.Stop()
-	i, err := &Instance.action.Create()
+	i, err := instance.action.GetById(id)
 	if err != nil {
 		return err
 	}
 	expire := time.After(instance.conf.TimeLeft)
 	start(i)
+	for {
+		select {
+		case <- ticker.C:
+			if i.State == StatePaused {
+				return nil
+			}
+			i.TimeLeft -= time.Second
+			if err := instance.action.Update(i); err != nil {
+				return nil
+			}
+			periodic(i)
+		case <- expire:
+			i.State = StateDone
+			
+		}
+	}
 
 }
