@@ -27,3 +27,13 @@ func (st *InMemStore) Update (c Config) error {
 	st.Pomodoros[c.ID-1] = c
 	return nil
 }
+
+func (st *InMemStore) GetById (id int) (Config, error) {
+	st.Lock()
+	defer st.Unlock()
+	if id < 0 {
+		return Config{}, fmt.Errorf("%w: %d", ErrInvalidID, id)
+	}
+	return st.Pomodoros[id-1], nil
+}
+
