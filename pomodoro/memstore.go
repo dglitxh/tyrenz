@@ -52,3 +52,15 @@ func (st *InMemStore) Delete (id int) error {
 	st.Pomodoros = confs
 	return nil
 }
+
+func (st *InMemStore) GetCompleted () []Config {
+	st.Lock()
+	defer st.Unlock()
+	var completed []Config
+	for _, v := range st.Pomodoros {
+		if v.State == StateDone {
+			completed = append(completed, v)
+		}
+	}
+	return completed
+}
