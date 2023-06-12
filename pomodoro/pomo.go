@@ -19,6 +19,7 @@ type Actions interface {
 	Update(c Config) (error)
 	GetById(id int) (Config, error)
 	Delete(id int) (string, error)
+	GetCompleted(id int) ([]Config)
 }
 
 const (
@@ -85,7 +86,7 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 
 }
 
-func newInstance(inst Instance, pomodoro, longbrk, shortbrk int) *Instance {
+func NewInstance(inst Instance, pomodoro, longbrk, shortbrk int) *Instance {
 	i := &Instance{
 		action: inst.action,
 		conf: inst.conf,
