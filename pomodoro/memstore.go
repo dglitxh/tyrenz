@@ -1,6 +1,9 @@
 package pomodoro
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 type InMemStore struct {
 	sync.RWMutex
@@ -15,3 +18,12 @@ func (st *InMemStore) Create (c Config) (int, error){
 	return c.ID, nil
 }
 
+func (st *InMemStore) Update (c Config) error {
+	st.Lock()
+	defer st.Unlock()
+	if c.ID == 0 {
+		return fmt.Errorf("%w: %d", ErrInvalidID, c.ID)
+	}
+	st.Pomodoros[c.ID-1] = c
+	return nil
+}
