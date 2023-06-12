@@ -37,3 +37,18 @@ func (st *InMemStore) GetById (id int) (Config, error) {
 	return st.Pomodoros[id-1], nil
 }
 
+func (st *InMemStore) Delete (id int) error {
+	st.Lock()
+	defer st.Unlock()
+	var confs []Config
+	if id == 0 {
+		return fmt.Errorf("%w: %d", ErrInvalidID, id)
+	}
+	for _, v := range st.Pomodoros {
+		if v.ID != id-1 {
+			confs = append(confs, v)
+		}
+	}
+	st.Pomodoros = confs
+	return nil
+}
