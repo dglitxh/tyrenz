@@ -116,7 +116,7 @@ func NewInstance(inst Instance, pomodoro, longbrk, shortbrk int) *Instance {
 	return i
 }
 
-func (i *Instance) Start(ctx context.Context,
+func Start(ctx context.Context, i *Instance,
 	start, periodic, end Callback) error {
 	switch i.conf.State {
 	case StateRunning:
@@ -135,4 +135,13 @@ func (i *Instance) Start(ctx context.Context,
 		default:
 		return fmt.Errorf("%w: %d", ErrInvalidState, i.conf.State)
 	}
+}
+
+
+func Pause(i *Instance) error {
+	if i.conf.State != StateRunning {
+		return ErrIntervalNotRunning
+	}
+	i.conf.State = StatePaused
+	return i.action.Update(i.conf)
 }
