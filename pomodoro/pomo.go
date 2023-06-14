@@ -119,22 +119,22 @@ func NewInstance(inst Instance, pomodoro, longbrk, shortbrk int) *Instance {
 func Start(ctx context.Context, i *Instance,
 	start, periodic, end Callback) error {
 	switch i.conf.State {
-	case StateRunning:
-		return nil
-	case StateNotStarted:
-		i.conf.StartTime = time.Now()
-		fallthrough
-	case StatePaused:
-		i.conf.State = StateRunning
-		if err := i.action.Update(i.conf); err != nil {
-		return err
-		}
-		return Tick(ctx, i.conf.ID, i, start, periodic, end)
-	case StateCancelled, StateDone:
-		return fmt.Errorf("%w: Cannot start", ErrIntervalCompleted)
+		case StateRunning:
+			return nil
+		case StateNotStarted:
+			i.conf.StartTime = time.Now()
+			fallthrough
+		case StatePaused:
+			i.conf.State = StateRunning
+			if err := i.action.Update(i.conf); err != nil {
+				return err
+			}
+			return Tick(ctx, i.conf.ID, i, start, periodic, end)
+		case StateCancelled, StateDone:
+				return fmt.Errorf("%w: Cannot start", ErrIntervalCompleted)
 		default:
-		return fmt.Errorf("%w: %d", ErrInvalidState, i.conf.State)
-	}
+			return fmt.Errorf("%w: %d", ErrInvalidState, i.conf.State)
+		}
 }
 
 
