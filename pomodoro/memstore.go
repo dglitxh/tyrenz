@@ -65,18 +65,15 @@ func (st *InMemStore) GetCompleted () []Config {
 	return completed
 }
 
-func (r *InMemStore) Breaks(n int) ([]Config, error) {
+func (r *InMemStore) Breaks() ([]Config, error) {
 	r.RLock()
 	defer r.RUnlock()
 	data := []Config{}
 	for k := len(r.Pomodoros) - 1; k >= 0; k-- {
-	if r.Pomodoros[k].Category == CatPomodoro {
-		continue
-	}
-	data = append(data, r.Pomodoros[k])
-	if len(data) == n {
-	return data, nil
-	}
+		if r.Pomodoros[k].Category == CatPomodoro {
+			continue
+		}
+		data = append(data, r.Pomodoros[k])
 	}
 	return data, nil
 }
