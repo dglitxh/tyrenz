@@ -33,3 +33,29 @@ func (w *widgets) update(timer []int, txtType, txtInfo, txtTimer string,
 	}
 	redrawCh <- true
 }
+
+func newWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
+	w := &widgets{}
+	var err error
+	w.updateDonTimer = make(chan []int)
+	w.updateTxtType = make(chan string)
+	w.updateTxtInfo = make(chan string)
+	w.updateTxtTimer = make(chan string)
+	w.donTimer, err = newDonut(ctx, w.updateDonTimer, errorCh)
+	if err != nil {
+	return nil, err
+	}
+	w.disType, err = newSegmentDisplay(ctx, w.updateTxtType, errorCh)
+	if err != nil {
+	return nil, err
+	}
+	w.txtInfo, err = newText(ctx, w.updateTxtInfo, errorCh)
+	if err != nil {
+	return nil, err
+	}
+	w.txtTimer, err = newText(ctx, w.updateTxtTimer, errorCh)
+	if err != nil {
+	return nil, err
+	}
+	return w, nil
+}
