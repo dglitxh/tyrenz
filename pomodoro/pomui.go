@@ -4,6 +4,7 @@ import (
 	"github.com/mum4k/termdash/widgets/donut"
 	"github.com/mum4k/termdash/widgets/segmentdisplay"
 	"github.com/mum4k/termdash/widgets/text"
+	"context"
 )
 
 type widgets struct {
