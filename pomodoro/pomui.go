@@ -1,10 +1,11 @@
 package pomodoro
 
 import (
+	"context"
+
 	"github.com/mum4k/termdash/widgets/donut"
 	"github.com/mum4k/termdash/widgets/segmentdisplay"
 	"github.com/mum4k/termdash/widgets/text"
-	"context"
 )
 
 type widgets struct {
@@ -65,18 +66,18 @@ func newText(ctx context.Context, updateText <-chan string,
 	errorCh chan<- error) (*text.Text, error) {
 	txt, err := text.New()
 	if err != nil {
-	return nil, err
+		return nil, err
 	}
 	go func() {
-	for {
-	select {
-	case t := <-updateText:
-	txt.Reset()
-	errorCh <- txt.Write(t)
-	case <-ctx.Done():
-	return
-	}
-	}
+		for {
+			select {
+				case t := <-updateText:
+					txt.Reset()
+					errorCh <- txt.Write(t)
+				case <-ctx.Done():
+					return
+			}
+		}	
 	}()
 	return txt, nil
 }
