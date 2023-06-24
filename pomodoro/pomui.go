@@ -83,26 +83,26 @@ func newText(ctx context.Context, updateText <-chan string,
 }
 
 func newSegmentDisplay(ctx context.Context, updateText <-chan string,
-errorCh chan<- error) (*segmentdisplay.SegmentDisplay, error) {
-sd, err := segmentdisplay.New()
-if err != nil {
-return nil, err
-}
-// Goroutine to update SegmentDisplay
-go func() {
-for {
-select {
-case t := <-updateText:
-if t == "" {
-t = " "
-}
-errorCh <- sd.Write([]*segmentdisplay.TextChunk{
-segmentdisplay.NewChunk(t),
-})
-case <-ctx.Done():
-return
-}
-}
-}()
-return sd, nil
+	errorCh chan<- error) (*segmentdisplay.SegmentDisplay, error) {
+	sd, err := segmentdisplay.New()
+	if err != nil {
+		return nil, err
+	}
+	// Goroutine to update SegmentDisplay
+	go func() {
+		for {
+			select {
+				case t := <-updateText:
+					if t == "" {
+					t = " "
+					}
+					errorCh <- sd.Write([]*segmentdisplay.TextChunk{
+					segmentdisplay.NewChunk(t),
+					})
+				case <-ctx.Done():
+					return
+					}
+			}
+	}()
+	return sd, nil
 }
