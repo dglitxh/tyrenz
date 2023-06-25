@@ -88,7 +88,6 @@ func newSegmentDisplay(ctx context.Context, updateText <-chan string,
 	if err != nil {
 		return nil, err
 	}
-	// Goroutine to update SegmentDisplay
 	go func() {
 		for {
 			select {
