@@ -6,6 +6,7 @@ import (
 	"github.com/mum4k/termdash/widgets/donut"
 	"github.com/mum4k/termdash/widgets/segmentdisplay"
 	"github.com/mum4k/termdash/widgets/text"
+	"github.com/mum4k/termdash/widgets/cell"
 )
 
 type widgets struct {
@@ -104,4 +105,28 @@ func newSegmentDisplay(ctx context.Context, updateText <-chan string,
 			}
 	}()
 	return sd, nil
+}
+
+func newDonut(ctx context.Context, donUpdater <-chan []int,
+	errorCh chan<- error) (*donut.Donut, error) {
+	don, err := donut.New(
+		donut.Clockwise(),
+		donut.CellOpts(cell.FgColor(cell.ColorBlue)),
+		)
+		if err != nil {
+			return nil, err
+		}
+		go func() {
+			for {
+				select {
+					case d := <-donUpdater:
+					if d[0] <= d[1] {
+						errorCh <- don.Absolute(d[0], d[1])
+					}
+					case <-ctx.Done():
+						return
+					}
+				}	
+		}()
+		return don, nil
 }
