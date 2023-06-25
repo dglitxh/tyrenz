@@ -3,10 +3,10 @@ package pomodoro
 import (
 	"context"
 
+	"github.com/mum4k/termdash/widgets/cell"
 	"github.com/mum4k/termdash/widgets/donut"
 	"github.com/mum4k/termdash/widgets/segmentdisplay"
 	"github.com/mum4k/termdash/widgets/text"
-	"github.com/mum4k/termdash/widgets/cell"
 )
 
 type widgets struct {
@@ -94,10 +94,10 @@ func newSegmentDisplay(ctx context.Context, updateText <-chan string,
 			select {
 				case t := <-updateText:
 					if t == "" {
-					t = " "
+						t = " "
 					}
 					errorCh <- sd.Write([]*segmentdisplay.TextChunk{
-					segmentdisplay.NewChunk(t),
+						segmentdisplay.NewChunk(t),
 					})
 				case <-ctx.Done():
 					return
