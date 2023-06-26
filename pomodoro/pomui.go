@@ -3,7 +3,7 @@ package pomodoro
 import (
 	"context"
 
-	"github.com/mum4k/termdash/widgets/cell"
+	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/widgets/donut"
 	"github.com/mum4k/termdash/widgets/segmentdisplay"
 	"github.com/mum4k/termdash/widgets/text"
@@ -12,7 +12,7 @@ import (
 type widgets struct {
 	donTimer *donut.Donut
 	disType *segmentdisplay.SegmentDisplay
-	txtInfo *text.Texts
+	txtInfo *text.Text
 	txtTimer *text.Text
 	updateDonTimer chan []int
 	updateTxtInfo chan string
@@ -63,7 +63,7 @@ func newWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 	return w, nil
 }
 
-func newText(ctx context.Context, updateText <-chan string,
+func NewText(ctx context.Context, updateText <-chan string,
 	errorCh chan<- error) (*text.Text, error) {
 	txt, err := text.New()
 	if err != nil {
@@ -83,7 +83,7 @@ func newText(ctx context.Context, updateText <-chan string,
 	return txt, nil
 }
 
-func newSegmentDisplay(ctx context.Context, updateText <-chan string,
+func NewSegmentDisplay(ctx context.Context, updateText <-chan string,
 	errorCh chan<- error) (*segmentdisplay.SegmentDisplay, error) {
 	sd, err := segmentdisplay.New()
 	if err != nil {
