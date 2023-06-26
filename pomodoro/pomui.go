@@ -37,26 +37,26 @@ func (w *widgets) update(timer []int, txtType, txtInfo, txtTimer string,
 	redrawCh <- true
 }
 
-func newWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
+func NewWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 	w := &widgets{}
 	var err error
 	w.updateDonTimer = make(chan []int)
 	w.updateTxtType = make(chan string)
 	w.updateTxtInfo = make(chan string)
 	w.updateTxtTimer = make(chan string)
-	w.donTimer, err = newDonut(ctx, w.updateDonTimer, errorCh)
+	w.donTimer, err = NewDonut(ctx, w.updateDonTimer, errorCh)
 	if err != nil {
 		return nil, err
 	}
-	w.disType, err = newSegmentDisplay(ctx, w.updateTxtType, errorCh)
+	w.disType, err = NewSegmentDisplay(ctx, w.updateTxtType, errorCh)
 	if err != nil {
 		return nil, err
 	}
-	w.txtInfo, err = newText(ctx, w.updateTxtInfo, errorCh)
+	w.txtInfo, err = NewText(ctx, w.updateTxtInfo, errorCh)
 	if err != nil {
 		return nil, err
 	}
-	w.txtTimer, err = newText(ctx, w.updateTxtTimer, errorCh)
+	w.txtTimer, err = NewText(ctx, w.updateTxtTimer, errorCh)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func NewSegmentDisplay(ctx context.Context, updateText <-chan string,
 	return sd, nil
 }
 
-func newDonut(ctx context.Context, donUpdater <-chan []int,
+func NewDonut(ctx context.Context, donUpdater <-chan []int,
 	errorCh chan<- error) (*donut.Donut, error) {
 	don, err := donut.New(
 		donut.Clockwise(),
