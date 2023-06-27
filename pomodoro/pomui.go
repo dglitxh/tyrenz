@@ -26,7 +26,7 @@ type Button struct {
 	pause *button.Button
 }
 
-func (w *widgets) update(timer []int, txtType, txtInfo, txtTimer string,
+func (w *widgets) Update(timer []int, txtType, txtInfo, txtTimer string,
 	redrawCh chan<- bool) {
 	if txtInfo != "" {
 		w.updateTxtInfo <- txtInfo
