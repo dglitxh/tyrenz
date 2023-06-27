@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mum4k/termdash/cell"
+	"github.com/mum4k/termdash/widgets/button"
 	"github.com/mum4k/termdash/widgets/donut"
 	"github.com/mum4k/termdash/widgets/segmentdisplay"
 	"github.com/mum4k/termdash/widgets/text"
@@ -18,6 +19,11 @@ type widgets struct {
 	updateTxtInfo chan string
 	updateTxtTimer chan string
 	updateTxtType chan string
+}
+
+type Button struct {
+	start *button.Button
+	pause *button.Button
 }
 
 func (w *widgets) update(timer []int, txtType, txtInfo, txtTimer string,
