@@ -21,7 +21,7 @@ type widgets struct {
 	updateTxtType chan string
 }
 
-type Button struct {
+type Buttons struct {
 	start *button.Button
 	pause *button.Button
 }
@@ -135,4 +135,9 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 				}	
 		}()
 		return don, nil
+}
+
+func NewButtonSet(ctx context.Context, config *Instance,
+w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
+
 }
