@@ -139,5 +139,15 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 
 func NewButtonSet(ctx context.Context, config *Instance,
 w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
-
+	startInterval := func() {
+		i, err := config.action.GetById(config.conf.ID)
+		errorCh <- err
+		start := func(i config.conf) {
+		message := "Take a break"
+		if i.Category == pomodoro.CategoryPomodoro {
+		message = "Focus on your task"
+	}
+	w.update([]int{}, i.Category, message, "", redrawCh)
+}
+	}
 }
