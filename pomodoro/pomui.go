@@ -142,12 +142,24 @@ w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	startInterval := func() {
 		i, err := config.action.GetById(config.conf.ID)
 		errorCh <- err
-		start := func(i config.conf) {
+		start := func(i Config) {
 		message := "Take a break"
-		if i.Category == pomodoro.CategoryPomodoro {
-		message = "Focus on your task"
+		if i.Category == CatPomodoro {
+			message = "Focus on your task"
 	}
 	w.update([]int{}, i.Category, message, "", redrawCh)
-}
 	}
+	btStart, err := button.New("(s)tart", func() error {
+	go startInterval()
+		return nil
+	},
+	button.GlobalKey('s'),
+	button.WidthFor("(p)ause"),
+	button.Height(2),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &buttonSet{btStart}, nil
+}
 }
