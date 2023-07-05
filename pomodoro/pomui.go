@@ -147,8 +147,9 @@ w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 		if i.Category == CatPomodoro {
 			message = "Focus on your task"
 	}
-	w.update([]int{}, i.Category, message, "", redrawCh)
+	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
+}
 	btStart, err := button.New("(s)tart", func() error {
 	go startInterval()
 		return nil
@@ -161,5 +162,4 @@ w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 		return nil, err
 	}
 	return &buttonSet{btStart}, nil
-}
 }
