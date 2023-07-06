@@ -158,8 +158,20 @@ w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	button.WidthFor("(p)ause"),
 	button.Height(2),
 	)
+
+	btPause, err := button.New("(p)ause", func() error {
+	go pauseInterval()
+	return nil
+	},
+	button.FillColor(cell.ColorNumber(220)),
+	button.GlobalKey('p'),
+	button.Height(2),
+	)
+if err != nil {
+return nil, err
+}
 	if err != nil {
 		return nil, err
 	}
-	return &buttonSet{btStart}, nil
+	return &buttonSet{btStart, btEnd}, nil
 }
