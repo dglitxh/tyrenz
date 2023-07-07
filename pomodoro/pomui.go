@@ -150,6 +150,22 @@ w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
 }
+
+	pauseInterval := func() {
+	i, err := config.action.GetById(config.conf.ID)
+	if err != nil {
+		errorCh <- err
+		return
+	}
+	if err := Pause(config); err != nil {
+		if err == ErrIntervalNotRunning {
+			return
+		}
+		errorCh <- err
+		return
+	}
+	w.Update([]int{}, "", "Paused... press start to continue", "", redrawCh)
+	}
 	btStart, err := button.New("(s)tart", func() error {
 	go startInterval()
 		return nil
@@ -173,5 +189,5 @@ w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &buttonSet{btStart, btPause}, nil
+		return &Buttons{btStart, btPause}, nil
 }
