@@ -167,11 +167,11 @@ w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	button.GlobalKey('p'),
 	button.Height(2),
 	)
-if err != nil {
-return nil, err
-}
 	if err != nil {
-		return nil, err
+	return nil, err
 	}
-	return &buttonSet{btStart, btEnd}, nil
+		if err != nil {
+			return nil, err
+		}
+		return &buttonSet{btStart, btPause}, nil
 }
