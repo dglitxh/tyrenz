@@ -3,6 +3,7 @@ package pomodoro
 import (
 	"context"
 	"fmt"
+
 	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/widgets/button"
 	"github.com/mum4k/termdash/widgets/donut"
@@ -152,7 +153,6 @@ func NewButtonSet(ctx context.Context, config *Instance,
 	end := func(Config) {
 		w.Update([]int{}, "", "Nothing running...", "", redrawCh)
 	}
-	}
 
 	periodic := func(i Config) {
 		w.Update(
@@ -162,6 +162,12 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		redrawCh,
 		)
 	}
+
+		errorCh <- Start(ctx, config, start, periodic, end)
+
+	}
+
+	
 
 	pauseInterval := func() {
 		i, err := config.action.GetById(config.conf.ID)
@@ -175,31 +181,32 @@ func NewButtonSet(ctx context.Context, config *Instance,
 			}
 			errorCh <- err
 			return 
+		}
+		w.Update([]int{}, "", "Paused... press start to continue", "", redrawCh)
 	}
-	w.Update([]int{}, "", "Paused... press start to continue", "", redrawCh)
-	}
+
 	btStart, err := button.New("(s)tart", func() error {
-	go startInterval()
-		return nil
-	},
-	button.GlobalKey('s'),
-	button.WidthFor("(p)ause"),
-	button.Height(2),
+		go startInterval()
+			return nil
+		},
+		button.GlobalKey('s'),
+		button.WidthFor("(p)ause"),
+		button.Height(2),
 	)
 
 	btPause, err := button.New("(p)ause", func() error {
-	go pauseInterval()
-	return nil
-	},
-	button.FillColor(cell.ColorNumber(220)),
-	button.GlobalKey('p'),
-	button.Height(2),
+		go pauseInterval()
+			return nil
+		},
+		button.FillColor(cell.ColorNumber(220)),
+		button.GlobalKey('p'),
+		button.Height(2),
 	)
 	if err != nil {
-	return nil, err
+		return nil, err
 	}
-		if err != nil {
+	if err != nil {
 			return nil, err
-		}
-		return &Buttons{btStart, btPause}, nil
+	}
+	return &Buttons{btStart, btPause}, nil
 }
