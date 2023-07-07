@@ -2,7 +2,7 @@ package pomodoro
 
 import (
 	"context"
-
+	"fmt"
 	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/widgets/button"
 	"github.com/mum4k/termdash/widgets/donut"
@@ -138,7 +138,7 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 }
 
 func NewButtonSet(ctx context.Context, config *Instance,
-w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
+	w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	startInterval := func() {
 		i, err := config.action.GetById(config.conf.ID)
 		errorCh <- err
@@ -149,20 +149,32 @@ w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	}
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
-}
+	end := func(Config) {
+		w.Update([]int{}, "", "Nothing running...", "", redrawCh)
+	}
+	}
+
+	periodic := func(i Config) {
+		w.Update(
+		[]int{int(i.Duration), int(i.TimeLeft)},
+		"", "",
+		fmt.Sprint(i.Duration-i.TimeLeft),
+		redrawCh,
+		)
+	}
 
 	pauseInterval := func() {
-	i, err := config.action.GetById(config.conf.ID)
-	if err != nil {
-		errorCh <- err
-		return
-	}
-	if err := Pause(config); err != nil {
-		if err == ErrIntervalNotRunning {
+		i, err := config.action.GetById(config.conf.ID)
+		if err != nil {
+			errorCh <- err
 			return
 		}
-		errorCh <- err
-		return
+		if err := Pause(config); err != nil {
+			if err == ErrIntervalNotRunning {
+				return
+			}
+			errorCh <- err
+			return 
 	}
 	w.Update([]int{}, "", "Paused... press start to continue", "", redrawCh)
 	}
