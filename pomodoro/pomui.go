@@ -141,7 +141,7 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 func NewButtonSet(ctx context.Context, config *Instance,
 	w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	startInterval := func() {
-		i, err := config.action.GetById(config.conf.ID)
+		_, err := config.action.GetById(config.conf.ID)
 		errorCh <- err
 		start := func(i Config) {
 		message := "Take a break"
@@ -170,7 +170,7 @@ func NewButtonSet(ctx context.Context, config *Instance,
 	
 
 	pauseInterval := func() {
-		i, err := config.action.GetById(config.conf.ID)
+		_, err := config.action.GetById(config.conf.ID)
 		if err != nil {
 			errorCh <- err
 			return
