@@ -53,7 +53,14 @@ t terminalapi.Terminal) (*container.Container, error) {
 			builder.Add(
 				grid.RowHeightPerc(60),
 				)
-			builder.Add(
-				grid.RowHeightPerc(60),
-			)
+			gridOpts, err := builder.Build()
+				if err != nil {
+				return nil, err
+
+				}
+			c, err := container.New(t, gridOpts...)
+				if err != nil {
+				return nil, err
+			}
+		return c, nil
 }
