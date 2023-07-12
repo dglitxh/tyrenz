@@ -28,4 +28,25 @@ func New(config *pomodoro.IntervalConfig) (*App, error) {
 		cancel()
 		}
 	}
+
+	redrawCh := make(chan bool)
+	errorCh := make(chan error)
+
+	w, err := NewWidgets(ctx, errorCh)
+		if err != nil {
+			return nil, err
+		}
+	b, err := NewButtonSet(ctx, config, w, redrawCh, errorCh)
+		if err != nil {
+			return nil, err
+		}
+
+	term, err := tcell.New()
+	if err != nil {
+		return nil, err
+	}
+	c, err := NewGrid(b, w, term)
+	if err != nil {
+		return nil, err
+	}
 }
