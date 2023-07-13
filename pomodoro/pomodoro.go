@@ -64,3 +64,14 @@ func New(config *pomodoro.IntervalConfig) (*App, error) {
 		term: term,
 	}, nil
 }
+
+func (a *App) resize() error {
+	if a.size.Eq(a.term.Size()) {
+		return nil
+	}
+	a.size = a.term.Size()
+	if err := a.term.Clear(); err != nil {
+		return err
+	}
+	return a.controller.Redraw()
+}
