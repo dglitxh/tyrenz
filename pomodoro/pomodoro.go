@@ -3,7 +3,7 @@ package pomodoro
 import (
 	"context"
 	"image"
-	"time"
+
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/terminal/tcell"
 	"github.com/mum4k/termdash/terminal/terminalapi"
@@ -49,4 +49,18 @@ func New(config *pomodoro.IntervalConfig) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	controller, err := termdash.NewController(term, c,
+	termdash.KeyboardSubscriber(quitter))
+	if err != nil {
+		return nil, err
+	}
+
+	return &App{
+		ctx: ctx,
+		controller: controller,
+		redrawCh: redrawCh,
+		errorCh: errorCh,
+		term: term,
+	}, nil
 }
