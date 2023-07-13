@@ -3,11 +3,11 @@ package pomodoro
 import (
 	"context"
 	"image"
+	"time"
 
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/terminal/tcell"
 	"github.com/mum4k/termdash/terminal/terminalapi"
-	"pragprog.com/rggo/interactiveTools/pomo/pomodoro"
 )
 
 
@@ -20,7 +20,7 @@ type App struct {
 	size image.Point
 }
 
-func New(config *pomodoro.IntervalConfig) (*App, error) {
+func New(inst *Instance) (*App, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	quitter := func(k *terminalapi.Keyboard) {
@@ -36,7 +36,7 @@ func New(config *pomodoro.IntervalConfig) (*App, error) {
 		if err != nil {
 			return nil, err
 		}
-	b, err := NewButtonSet(ctx, config, w, redrawCh, errorCh)
+	b, err := NewButtonSet(ctx, inst, w, redrawCh, errorCh)
 		if err != nil {
 			return nil, err
 		}
@@ -74,4 +74,29 @@ func (a *App) resize() error {
 		return err
 	}
 	return a.controller.Redraw()
+}
+
+func (a *App) Run() error {
+	defer a.term.Close()
+	defer a.controller.Close()
+	ticker := time.NewTicker(2 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+			case <-a.redrawCh:
+			if err := a.controller.Redraw(); err != nil {
+				return err
+			}
+			case err := <-a.errorCh:
+				if err != nil {
+					return err
+				}
+			case <-a.ctx.Done():
+				return nil
+			case <-ticker.C:
+				if err := a.resize(); err != nil {
+					return err
+				}
+		}
+	}
 }
