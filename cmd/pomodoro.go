@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -26,6 +27,12 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
+	pomodoroCmd.Flags().DurationP("pomo", "p", 25*time.Minute,
+	"Pomodoro duration")
+	pomodoroCmd.Flags().DurationP("short", "s", 5*time.Minute,
+	"Short break duration")
+	pomodoroCmd.Flags().DurationP("long", "l", 15*time.Minute,
+	"Long break duration")
 	rootCmd.AddCommand(pomodoroCmd)
 
 	// Here you will define your flags and configuration settings.
