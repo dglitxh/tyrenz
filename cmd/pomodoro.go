@@ -11,6 +11,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var pomo time.Duration
+var shortbrk time.Duration
+var longbrk time.Duration
+
 // pomodoroCmd represents the pomodoro command
 var pomodoroCmd = &cobra.Command{
 	Use:   "pomodoro",
@@ -27,7 +31,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	pomodoroCmd.Flags().DurationP("pomo", "p", 25*time.Minute,
+	pomodoroCmd.Flags().DurationVarP(&pomo, "pomo", "p", 25*time.Minute,
 	"Pomodoro duration")
 	pomodoroCmd.Flags().DurationP("short", "s", 5*time.Minute,
 	"Short break duration")
