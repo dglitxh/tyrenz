@@ -33,9 +33,9 @@ to quickly create a Cobra application.`,
 func init() {
 	pomodoroCmd.Flags().DurationVarP(&pomo, "pomo", "p", 25*time.Minute,
 	"Pomodoro duration")
-	pomodoroCmd.Flags().DurationP("short", "s", 5*time.Minute,
+	pomodoroCmd.Flags().DurationVarP(&shortbrk, "short", "s", 5*time.Minute,
 	"Short break duration")
-	pomodoroCmd.Flags().DurationP("long", "l", 15*time.Minute,
+	pomodoroCmd.Flags().DurationVarP(&longbrk, "long", "l", 15*time.Minute,
 	"Long break duration")
 	rootCmd.AddCommand(pomodoroCmd)
 
