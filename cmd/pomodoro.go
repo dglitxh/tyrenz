@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/dglitxh/tyrenz/pomodoro"
+	"github.com/dglitxh/tyrenz/pomo_utils"
 	"github.com/spf13/cobra"
 )
 
@@ -27,6 +28,10 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		app := pomodoro.App{}
+
+		conf, err := pomo_utils.
+		app.New()
+		app.Run()
 	},
 }
 
