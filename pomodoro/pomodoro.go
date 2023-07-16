@@ -20,7 +20,7 @@ type App struct {
 	size image.Point
 }
 
-func New(inst *Instance) (*App, error) {
+func (a *App) New(inst *Instance) (*App, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	quitter := func(k *terminalapi.Keyboard) {
