@@ -5,10 +5,10 @@ Copyright © 2023 pomoCmd
 package cmd
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/dglitxh/tyrenz/pomodoro"
-	"github.com/dglitxh/tyrenz/pomo_utils"
 	"github.com/spf13/cobra"
 )
 
@@ -27,12 +27,12 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		instance := pomodoro.Actions.Create()
-		app := pomodoro.App{}
-		a := pomodoro.New()
-
-		conf, err := pomo_utils.
-		app.New()
+		i := pomodoro.Instance{}
+		instance := pomodoro.NewInstance(i, int(pomo), int(longbrk), int(shortbrk))
+		app, err := pomodoro.New(instance)
+		if err != nil {
+			fmt.Println(err)
+		}
 		app.Run()
 	},
 }
