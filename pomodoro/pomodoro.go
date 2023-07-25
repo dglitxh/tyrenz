@@ -20,7 +20,7 @@ type App struct {
 	size image.Point
 }
 
-func New(inst *Instance) (*App, error) {
+func (inst *Instance) New() (*App, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	quitter := func(k *terminalapi.Keyboard) {
@@ -36,7 +36,7 @@ func New(inst *Instance) (*App, error) {
 		if err != nil {
 			return nil, err
 		}
-	b, err := NewButtonSet(ctx, inst, w, redrawCh, errorCh)
+	b, err := inst.NewButtonSet(ctx, w, redrawCh, errorCh)
 		if err != nil {
 			return nil, err
 		}
