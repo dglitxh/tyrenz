@@ -138,43 +138,43 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 	return don, nil
 }
 
-func NewButtonSet(ctx context.Context, config *Instance,
+func (inst *Instance) NewButtonSet(ctx context.Context,
 	w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	startInterval := func() {
-		p, err := config.action.GetById(config.conf.ID)
-		fmt.Println(p)
+		_, err := inst.Action.GetById(inst.Conf.ID)
+		fmt.Println(inst)
 		errorCh <- err
-		start := func(*Config) {
+		start := func(c Config) {
 			message := "Take a break"
-			if config.conf.Category == CatPomodoro {
+			if c.Category == CatPomodoro {
 				message = "Focus on your task"
 			}
-			w.Update([]int{}, config.conf.Category, message, "", redrawCh)
+			w.Update([]int{}, c.Category, message, "", redrawCh)
 		}
-		end := func(*Config) {
+		end := func(Config) {
 			w.Update([]int{}, "", "Nothing running...", "", redrawCh)
 		}
 
-		periodic := func(*Config) {
+		periodic := func(c Config) {
 			w.Update(
-				[]int{int(config.conf.Duration), int(config.conf.TimeLeft)},
+				[]int{int(c.Duration), int(c.TimeLeft)},
 				"", "",
-				fmt.Sprint(config.conf.Duration-config.conf.TimeLeft),
+				fmt.Sprint(c.Duration-c.TimeLeft),
 				redrawCh,
 			)
 		}
 
-		errorCh <- Start(ctx, config, start, periodic, end)
+		errorCh <- inst.Start(ctx, start, periodic, end)
 
 	}
 
 	pauseInterval := func() {
-		_, err := config.action.GetById(config.conf.ID)
+		_, err := inst.Action.GetById(inst.Conf.ID)
 		if err != nil {
 			errorCh <- err
 			return
 		}
-		if err := Pause(config); err != nil {
+		if err := inst.Pause(); err != nil {
 			if err == ErrIntervalNotRunning {
 				return
 			}
