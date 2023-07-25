@@ -7,10 +7,10 @@ import (
 
 type InMemStore struct {
 	sync.RWMutex
-	Pomodoros []Config
+	Pomodoros []*Config
 }
 
-func (st *InMemStore) Create (c Config) (int, error){
+func (st *InMemStore) Create (c *Config) (int, error){
 	st.Lock()
 	defer st.Unlock()
 	c.ID = len(st.Pomodoros)+1
@@ -18,7 +18,7 @@ func (st *InMemStore) Create (c Config) (int, error){
 	return c.ID, nil
 }
 
-func (st *InMemStore) Update (c Config) error {
+func (st *InMemStore) Update (c *Config) error {
 	st.Lock()
 	defer st.Unlock()
 	if c.ID == 0 {
@@ -28,11 +28,11 @@ func (st *InMemStore) Update (c Config) error {
 	return nil
 }
 
-func (st *InMemStore) GetById (id int) (Config, error) {
+func (st *InMemStore) GetById (id int) (*Config, error) {
 	st.Lock()
 	defer st.Unlock()
 	if id < 0 {
-		return Config{}, fmt.Errorf("%w: %d", ErrInvalidID, id)
+		return &Config{}, fmt.Errorf("%w: %d", ErrInvalidID, id)
 	}
 	return st.Pomodoros[id-1], nil
 }
@@ -40,7 +40,7 @@ func (st *InMemStore) GetById (id int) (Config, error) {
 func (st *InMemStore) Delete (id int) error {
 	st.Lock()
 	defer st.Unlock()
-	var confs []Config
+	var confs []*Config
 	if id == 0 {
 		return fmt.Errorf("%w: %d", ErrInvalidID, id)
 	}
@@ -53,10 +53,10 @@ func (st *InMemStore) Delete (id int) error {
 	return nil
 }
 
-func (st *InMemStore) GetCompleted () []Config {
+func (st *InMemStore) GetCompleted () []*Config {
 	st.Lock()
 	defer st.Unlock()
-	var completed []Config
+	var completed []*Config
 	for _, v := range st.Pomodoros {
 		if v.State == StateDone {
 			completed = append(completed, v)
@@ -65,10 +65,10 @@ func (st *InMemStore) GetCompleted () []Config {
 	return completed
 }
 
-func (r *InMemStore) Breaks() ([]Config, error) {
+func (r *InMemStore) Breaks() ([]*Config, error) {
 	r.RLock()
 	defer r.RUnlock()
-	data := []Config{}
+	data := []*Config{}
 	for k := len(r.Pomodoros) - 1; k >= 0; k-- {
 		if r.Pomodoros[k].Category == CatPomodoro {
 			continue
