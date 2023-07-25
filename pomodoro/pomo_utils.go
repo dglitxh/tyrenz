@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type Callback func(*Config)
+type Callback func(Config)
 
 const (
 	CatPomodoro   = "Pomodoro"
@@ -57,11 +57,8 @@ func (instance *Instance) Tick(ctx context.Context, id int, start, periodic, end
 
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
-	i, err := instance.Action.GetById(id)
-	if err != nil {
-		return err
-	}
-	expire := time.After(instance.Conf.TimeLeft)
+	i := instance.Conf
+	expire := time.After(i.TimeLeft)
 	start(i)
 	for {
 		select {
@@ -88,7 +85,9 @@ func (instance *Instance) Tick(ctx context.Context, id int, start, periodic, end
 }
 
 func (inst *Instance) NewInstance(pomodoro, longbrk, shortbrk int) *Instance {
-	i := &inst.Conf
+	i := Config{
+		Category: CatPomodoro,
+	}
 	i.State = StateNotStarted
 	switch i.Category {
 	case CatPomodoro:
@@ -110,6 +109,11 @@ func (inst *Instance) NewInstance(pomodoro, longbrk, shortbrk int) *Instance {
 			i.Duration = time.Minute * time.Duration(longbrk)
 		}
 	}
+	i.TimeLeft = i.Duration
+	i.ID = len(inst.Action.Pomodoros) + 1
+	inst.Conf = i
+	inst.Action.Create(i)
+
 	return inst
 }
 
@@ -120,10 +124,12 @@ func (i *Instance) Start(ctx context.Context,
 		return nil
 	case StateNotStarted:
 		i.Conf.StartTime = time.Now()
+		i.Conf.State = StateRunning
+		i.Tick(ctx, i.Conf.ID, start, periodic, end)
 		fallthrough
 	case StatePaused:
 		i.Conf.State = StateRunning
-		if err := i.Action.Update(&i.Conf); err != nil {
+		if err := i.Action.Update(i.Conf); err != nil {
 			return err
 		}
 		return i.Tick(ctx, i.Conf.ID, start, periodic, end)
@@ -139,5 +145,5 @@ func (i *Instance) Pause() error {
 		return ErrIntervalNotRunning
 	}
 	i.Conf.State = StatePaused
-	return i.Action.Update(&i.Conf)
+	return i.Action.Update(i.Conf)
 }
