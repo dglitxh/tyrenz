@@ -27,8 +27,8 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		i := &pomodoro.Instance{}
-		instance := pomodoro.NewInstance(i, int(pomo), int(longbrk), int(shortbrk))
-		app, err := pomodoro.New(instance)
+		instance := i.NewInstance(int(pomo), int(longbrk), int(shortbrk))
+		app, err := instance.New()
 		if err != nil {
 			fmt.Println(err)
 		}
