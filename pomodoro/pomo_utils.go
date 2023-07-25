@@ -41,8 +41,8 @@ type Config struct {
 }
 
 type Instance struct {
-	conf   Config
-	action InMemStore
+	Conf   Config
+	Action InMemStore
 }
 
 var (
@@ -53,15 +53,15 @@ var (
 	ErrInvalidID          = errors.New("invalid id")
 )
 
-func Tick(ctx context.Context, id int, instance *Instance, start, periodic, end Callback) error {
+func (instance *Instance) Tick(ctx context.Context, id int, start, periodic, end Callback) error {
 
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
-	i, err := instance.action.GetById(id)
+	i, err := instance.Action.GetById(id)
 	if err != nil {
 		return err
 	}
-	expire := time.After(instance.conf.TimeLeft)
+	expire := time.After(instance.Conf.TimeLeft)
 	start(i)
 	for {
 		select {
@@ -70,25 +70,25 @@ func Tick(ctx context.Context, id int, instance *Instance, start, periodic, end 
 				return nil
 			}
 			i.TimeLeft -= time.Second
-			if err := instance.action.Update(i); err != nil {
+			if err := instance.Action.Update(i); err != nil {
 				return nil
 			}
 			periodic(i)
 		case <-expire:
 			i.State = StateDone
 			end(i)
-			return instance.action.Update(i)
+			return instance.Action.Update(i)
 		case <-ctx.Done():
 			i.State = StateCancelled
-			return instance.action.Update(i)
+			return instance.Action.Update(i)
 
 		}
 	}
 
 }
 
-func NewInstance(inst *Instance, pomodoro, longbrk, shortbrk int) *Instance {
-	i := &inst.conf
+func (inst *Instance) NewInstance(pomodoro, longbrk, shortbrk int) *Instance {
+	i := &inst.Conf
 	i.State = StateNotStarted
 	switch i.Category {
 	case CatPomodoro:
@@ -110,36 +110,34 @@ func NewInstance(inst *Instance, pomodoro, longbrk, shortbrk int) *Instance {
 			i.Duration = time.Minute * time.Duration(longbrk)
 		}
 	}
-	fmt.Println(pomodoro)
-	inst.action.Create(i)
 	return inst
 }
 
-func Start(ctx context.Context, i *Instance,
+func (i *Instance) Start(ctx context.Context,
 	start, periodic, end Callback) error {
-	switch i.conf.State {
+	switch i.Conf.State {
 	case StateRunning:
 		return nil
 	case StateNotStarted:
-		i.conf.StartTime = time.Now()
+		i.Conf.StartTime = time.Now()
 		fallthrough
 	case StatePaused:
-		i.conf.State = StateRunning
-		if err := i.action.Update(&i.conf); err != nil {
+		i.Conf.State = StateRunning
+		if err := i.Action.Update(&i.Conf); err != nil {
 			return err
 		}
-		return Tick(ctx, i.conf.ID, i, start, periodic, end)
+		return i.Tick(ctx, i.Conf.ID, start, periodic, end)
 	case StateCancelled, StateDone:
 		return fmt.Errorf("%w: Cannot start", ErrIntervalCompleted)
 	default:
-		return fmt.Errorf("%w: %d", ErrInvalidState, i.conf.State)
+		return fmt.Errorf("%w: %d", ErrInvalidState, i.Conf.State)
 	}
 }
 
-func Pause(i *Instance) error {
-	if i.conf.State != StateRunning {
+func (i *Instance) Pause() error {
+	if i.Conf.State != StateRunning {
 		return ErrIntervalNotRunning
 	}
-	i.conf.State = StatePaused
-	return i.action.Update(&i.conf)
+	i.Conf.State = StatePaused
+	return i.Action.Update(&i.Conf)
 }
