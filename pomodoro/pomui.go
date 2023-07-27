@@ -141,13 +141,14 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 func NewButtonSet(ctx context.Context, config *Instance,
 	w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	startInterval := func() {
-		_, err := config.action.GetById(config.conf.ID)
+		var err error
 		errorCh <- err
 		start := func(i Config) {
+		i.State = StateRunning
 		message := "Take a break"
 		if i.Category == CatPomodoro {
 			message = "Focus on your task"
-	}
+		}
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
 	end := func(Config) {
@@ -170,7 +171,7 @@ func NewButtonSet(ctx context.Context, config *Instance,
 	
 
 	pauseInterval := func() {
-		_, err := config.action.GetById(config.conf.ID)
+		_, err := config.Action.GetById(config.Conf.ID)
 		if err != nil {
 			errorCh <- err
 			return
@@ -193,6 +194,9 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		button.WidthFor("(p)ause"),
 		button.Height(2),
 	)
+	if err != nil {
+			return nil, err
+	}
 
 	btPause, err := button.New("(p)ause", func() error {
 		go pauseInterval()
@@ -205,8 +209,6 @@ func NewButtonSet(ctx context.Context, config *Instance,
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-			return nil, err
-	}
+	
 	return &Buttons{btStart, btPause}, nil
 }
