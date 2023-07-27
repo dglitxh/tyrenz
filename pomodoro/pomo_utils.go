@@ -4,7 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
+
+	"github.com/dglitxh/tyrenz/helpers"
 )
 
 type Callback func(Config)
@@ -54,12 +57,16 @@ var (
 )
 
 func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end Callback) error {
-	
 	ticker:= time.NewTicker(time.Second)
 	defer ticker.Stop()
-	i, err := instance.Action.GetById(id)
+	i, err := instance.Action.GetById(id)	
 	if err != nil {
+		helpers.Logger(err.Error(), "tick")
 		return err
+	}
+	helpers.Logger(strconv.Itoa(i.State), "state")
+	if i.State == StateNotStarted {
+		helpers.Logger("State Defined")
 	}
 	expire := time.After(instance.Conf.TimeLeft)
 	start(i)
@@ -70,25 +77,33 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 				return nil
 			}
 			i.TimeLeft -= time.Second
-			if err := instance.Action.Update(i); err != nil {
+			if c, err := instance.Action.Update(i); err != nil {
 				return nil
+			}else {
+				i = c
 			}
 			periodic(i)
 		case <- expire:
 			i.State = StateDone
 			end(i)
-			return instance.Action.Update(i)
+			_, err := instance.Action.Update(i); if err != nil {
+				return nil
+			}
+
 		case <- ctx.Done():
 			i.State = StateCancelled
-			return instance.Action.Update(i)
+			_, err := instance.Action.Update(i); if err != nil {
+				return nil
+			}
 			
 		}
 	}
-
 }
 
 func NewInstance(inst *Instance, pomodoro, longbrk, shortbrk int) *Instance {
-	i := Config{}
+	i := Config{
+		Category: CatPomodoro,
+	}
 	switch i.Category {
 		case CatPomodoro:
 			if pomodoro < 1 {
@@ -114,6 +129,7 @@ func NewInstance(inst *Instance, pomodoro, longbrk, shortbrk int) *Instance {
 	i.ID = len(inst.Action.Pomodoros )+1
 	inst.Conf = i
 	inst.Action.Create(i)
+	helpers.Logger(string(inst.Conf.Category))
 	return inst
 }
 
@@ -127,7 +143,7 @@ func Start(ctx context.Context, i *Instance,
 			fallthrough
 		case StatePaused:
 			i.Conf.State = StateRunning
-			if err := i.Action.Update(i.Conf); err != nil {
+			if _, err := i.Action.Update(i.Conf); err != nil {
 				return err
 			}
 			return Tick(ctx, i.Conf.ID, i, start, periodic, end)
@@ -144,5 +160,8 @@ func Pause(i *Instance) error {
 		return ErrIntervalNotRunning
 	}
 	i.Conf.State = StatePaused
-	return i.Action.Update(i.Conf)
+	if _, err := i.Action.Update(i.Conf); err != nil {
+		return err
+	}
+	return nil
 }
