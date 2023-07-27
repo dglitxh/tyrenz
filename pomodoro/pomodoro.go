@@ -20,7 +20,7 @@ type App struct {
 	size image.Point
 }
 
-func New(inst *Instance) (*App, error) {
+func (inst *Instance) New() (*App, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	quitter := func(k *terminalapi.Keyboard) {
@@ -28,6 +28,8 @@ func New(inst *Instance) (*App, error) {
 			cancel()
 		}
 	}
+
+	
 
 	redrawCh := make(chan bool)
 	errorCh := make(chan error)
