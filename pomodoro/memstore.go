@@ -18,14 +18,14 @@ func (st *InMemStore) Create (c Config) (int, error){
 	return c.ID, nil
 }
 
-func (st *InMemStore) Update (c Config) error {
+func (st *InMemStore) Update (c Config) (Config, error) {
 	st.Lock()
 	defer st.Unlock()
 	if c.ID == 0 {
-		return fmt.Errorf("%w: %d", ErrInvalidID, c.ID)
+		return Config{}, fmt.Errorf("%w: %d", ErrInvalidID, c.ID)
 	}
 	st.Pomodoros[c.ID-1] = c
-	return nil
+	return c, nil
 }
 
 func (st *InMemStore) GetById (id int) (Config, error) {
