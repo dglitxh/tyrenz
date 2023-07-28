@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/dglitxh/tyrenz/pomodoro"
 	"github.com/spf13/cobra"
 )
@@ -32,6 +33,7 @@ to quickly create a Cobra application.`,
 		
 		app, err := inst.New()
 		if err != nil {
+			helpers.Logger("default state for start error please help me.")
 			fmt.Println(err)
 		}
 		app.Run()
