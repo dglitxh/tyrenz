@@ -134,6 +134,7 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 			for {
 				select {
 					case d := <-donUpdater:
+					helpers.Logger("Upadate doughnut.")
 					if d[0] <= d[1] {
 						errorCh <- don.Absolute(d[0], d[1])
 					}
@@ -160,6 +161,7 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		if i.Category == CatPomodoro {
 			message = "Focus on your task"
 		}
+		helpers.Logger("Starting.....", message)
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
 	end := func(Config) {
@@ -168,11 +170,12 @@ func NewButtonSet(ctx context.Context, config *Instance,
 
 	periodic := func(i Config) {
 		w.Update(
-		[]int{int(i.Duration), int(i.TimeLeft)},
+		[]int{int(i.Duration), int(i.TimeElapsed)},
 		"", "",
-		fmt.Sprint(i.Duration-i.TimeLeft),
+		fmt.Sprint(i.Duration.Minutes()-i.TimeElapsed.Minutes()),
 		redrawCh,
 		)
+		helpers.Logger(i.TimeElapsed)
 	}
 
 		errorCh <- Start(ctx, config, start, periodic, end)
