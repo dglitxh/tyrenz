@@ -38,7 +38,7 @@ type Config struct {
 	ID int
 	StartTime time.Time
 	Duration time.Duration
-	TimeLeft time.Duration
+	TimeElapsed time.Duration
 	Category string
 	State int
 }
@@ -57,18 +57,18 @@ var (
 )
 
 func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end Callback) error {
-	ticker:= time.NewTicker(time.Second)
+	ticker:= time.NewTicker(instance.Conf.Duration)
 	defer ticker.Stop()
 	i, err := instance.Action.GetById(id)	
 	if err != nil {
 		helpers.Logger(err.Error(), "tick")
 		return err
 	}
-	helpers.Logger(strconv.Itoa(i.State), "state")
+	helpers.Logger(strconv.Itoa(i.State), "stateddd")
 	if i.State == StateNotStarted {
 		helpers.Logger("State Defined")
 	}
-	expire := time.After(time.Microsecond*23)
+	expire := time.After(i.Duration-i.TimeElapsed)
 	start(i)
 	for {
 		select {
@@ -76,19 +76,23 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 			if i.State == StatePaused {
 				continue
 			}
-			i.TimeLeft -= time.Second
+			i.TimeElapsed += time.Second
 			if c, err := instance.Action.Update(i); err != nil {
 				return err
 			}else {
 				i = c
 			}
+			instance.Conf = i
+			helpers.Logger(i.Duration)
 			periodic(i)
 		case <- expire:
+			helpers.Logger("Expiring......")
 			i.State = StateDone
-			end(i)
 			_, err := instance.Action.Update(i); if err != nil {
 				return nil
 			}
+			instance.Conf = i
+			end(i)
 
 		case <- ctx.Done():
 			i.State = StateCancelled
@@ -104,24 +108,25 @@ func NewInstance(inst *Instance, pomodoro, longbrk, shortbrk int) *Instance {
 	i := Config{
 		Category: CatPomodoro,
 	}
+	helpers.Logger(pomodoro, longbrk, shortbrk)
 	switch i.Category {
 		case CatPomodoro:
 			if pomodoro < 1 {
 				i.Duration = time.Minute * 25
 			}else {
-				i.Duration = time.Minute * time.Duration(pomodoro)
+				i.Duration = time.Duration(pomodoro)
 			}
 		case CatShortBreak:
 			if shortbrk  < 1 {
 				i.Duration = time.Minute * 5
 			}else {
-				i.Duration = time.Minute * time.Duration(shortbrk)
+				i.Duration = time.Duration(shortbrk)
 			}
 		case CatLongBreak:
 			if longbrk  < 1 {
 				i.Duration = time.Minute * 15
 			}else {
-				i.Duration = time.Minute * time.Duration(longbrk)
+				i.Duration = time.Duration(longbrk)
 			}
 	}
 	
@@ -130,7 +135,7 @@ func NewInstance(inst *Instance, pomodoro, longbrk, shortbrk int) *Instance {
 	i.ID = len(inst.Action.Pomodoros )+1
 	inst.Conf = i
 	inst.Action.Create(i)
-	helpers.Logger(fmt.Sprint(inst.Conf.Duration))
+	helpers.Logger(fmt.Sprint(inst.Conf.Duration), "duration my boiiiii")
 	return inst
 }
 
@@ -145,7 +150,7 @@ func Start(ctx context.Context, i *Instance,
 			if _, err := i.Action.Update(i.Conf); err != nil {
 				return err
 			}
-			return Tick(ctx, i.Conf.ID, i, start, periodic, end)
+			Tick(ctx, i.Conf.ID, i, start, periodic, end)
 		case StatePaused:
 			i.Conf.State = StateRunning
 			if _, err := i.Action.Update(i.Conf); err != nil {
@@ -160,17 +165,20 @@ func Start(ctx context.Context, i *Instance,
 			helpers.Logger("default state for start error please help me.")
 			return fmt.Errorf("%w: %d", ErrInvalidState, i.Conf.State)
 		}	
+		return nil
 }
 
 
 func Pause(i *Instance) error {
 	if i.Conf.State != StateRunning {
+		helpers.Logger(i.Conf.State, "Pause: not started")
 		return ErrIntervalNotRunning
 	}
 	i.Conf.State = StatePaused
 	if _, err := i.Action.Update(i.Conf); err != nil {
+		helpers.Logger(err.Error(), "Pause")
 		return err
 	}
-	helpers.Logger(strconv.Itoa(i.Conf.State))
+	helpers.Logger("Timer paused")
 	return nil
 }
