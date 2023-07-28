@@ -5,6 +5,7 @@ import (
 	"image"
 	"time"
 
+	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/mum4k/termdash"
 	"github.com/mum4k/termdash/terminal/tcell"
 	"github.com/mum4k/termdash/terminal/terminalapi"
@@ -81,24 +82,28 @@ func (a *App) resize() error {
 func (a *App) Run() error {
 	defer a.term.Close()
 	defer a.controller.Close()
-	ticker := time.NewTicker(2 * time.Second)
+	ticker := time.NewTicker(2*time.Second)
 	defer ticker.Stop()
 	for {
 		select {
 			case <-a.redrawCh:
 			if err := a.controller.Redraw(); err != nil {
+				helpers.Logger(err.Error(), ":  app redraw")
 				return err
 			}
-			case err := <-a.errorCh:
-				if err != nil {
-					return err
-				}
-			case <-a.ctx.Done():
-				return nil
 			case <-ticker.C:
 				if err := a.resize(); err != nil {
 					return err
 				}
+			case err := <-a.errorCh:
+				if err != nil {
+					helpers.Logger(err.Error(), ":  app runner")
+					return err
+				}
+			case <-a.ctx.Done():
+				helpers.Logger("done @ app")
+				return nil
+			
 		}
 	}
 }
