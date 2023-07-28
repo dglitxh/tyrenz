@@ -3,6 +3,7 @@ package helpers
 import (
 	"log"
 	"os"
+	"strconv"
 )
 
 
@@ -11,10 +12,17 @@ func Logger (txt... interface{}) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer f.Close()
 	log.SetOutput(f)
 	var output string
 	for _, v := range txt {
-		output += " "+v.(string)
+		if _, ok := v.(string); ok {
+			output += " "+v.(string)
+		}else if _, ok := v.(int); ok {
+			output += " "+strconv.Itoa(v.(int))
+		}else if _, ok := v.(bool); ok {
+			output += " "+strconv.FormatBool(v.(bool))
+		}
 	}
 	log.Println(output)
 }
