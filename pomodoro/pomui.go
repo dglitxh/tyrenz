@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/widgets/button"
 	"github.com/mum4k/termdash/widgets/donut"
@@ -53,18 +54,22 @@ func NewWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 	w.updateTxtTimer = make(chan string)
 	w.donTimer, err = NewDonut(ctx, w.updateDonTimer, errorCh)
 	if err != nil {
+		helpers.Logger("Donut creation error")
 		return nil, err
 	}
 	w.disType, err = NewSegmentDisplay(ctx, w.updateTxtType, errorCh)
 	if err != nil {
+		helpers.Logger("Seg disp err, w.distype ui")
 		return nil, err
 	}
 	w.txtInfo, err = NewText(ctx, w.updateTxtInfo, errorCh)
 	if err != nil {
+		helpers.Logger("new text error")
 		return nil, err
 	}
 	w.txtTimer, err = NewText(ctx, w.updateTxtTimer, errorCh)
 	if err != nil {
+		helpers.Logger("new text error")
 		return nil, err
 	}
 	return w, nil
@@ -94,6 +99,7 @@ func NewSegmentDisplay(ctx context.Context, updateText <-chan string,
 	errorCh chan<- error) (*segmentdisplay.SegmentDisplay, error) {
 	sd, err := segmentdisplay.New()
 	if err != nil {
+		helpers.Logger("Seg Disp error")
 		return nil, err
 	}
 	go func() {
@@ -108,7 +114,7 @@ func NewSegmentDisplay(ctx context.Context, updateText <-chan string,
 					})
 				case <-ctx.Done():
 					return
-					}
+				}
 			}
 	}()
 	return sd, nil
@@ -121,6 +127,7 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 		donut.CellOpts(cell.FgColor(cell.ColorBlue)),
 		)
 		if err != nil {
+			helpers.Logger("donut error : NewDonut")
 			return nil, err
 		}
 		go func() {
@@ -141,10 +148,14 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 func NewButtonSet(ctx context.Context, config *Instance,
 	w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	startInterval := func() {
-		var err error
-		errorCh <- err
+		_, err := config.Action.GetById(config.Conf.ID)
+		if err != nil {
+			errorCh <- err
+			return
+		}
 		start := func(i Config) {
 		i.State = StateRunning
+		config.Conf.State = i.State
 		message := "Take a break"
 		if i.Category == CatPomodoro {
 			message = "Focus on your task"
