@@ -68,17 +68,17 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 	if i.State == StateNotStarted {
 		helpers.Logger("State Defined")
 	}
-	expire := time.After(instance.Conf.TimeLeft)
+	expire := time.After(time.Microsecond*23)
 	start(i)
 	for {
 		select {
 		case <- ticker.C:
 			if i.State == StatePaused {
-				return nil
+				continue
 			}
 			i.TimeLeft -= time.Second
 			if c, err := instance.Action.Update(i); err != nil {
-				return nil
+				return err
 			}else {
 				i = c
 			}
@@ -126,10 +126,11 @@ func NewInstance(inst *Instance, pomodoro, longbrk, shortbrk int) *Instance {
 	}
 	
 	i.Category = CatPomodoro
+	i.State = StateNotStarted
 	i.ID = len(inst.Action.Pomodoros )+1
 	inst.Conf = i
 	inst.Action.Create(i)
-	helpers.Logger(string(inst.Conf.Category))
+	helpers.Logger(fmt.Sprint(inst.Conf.Duration))
 	return inst
 }
 
@@ -140,18 +141,25 @@ func Start(ctx context.Context, i *Instance,
 			return nil
 		case StateNotStarted:
 			i.Conf.StartTime = time.Now()
-			fallthrough
-		case StatePaused:
 			i.Conf.State = StateRunning
 			if _, err := i.Action.Update(i.Conf); err != nil {
 				return err
 			}
 			return Tick(ctx, i.Conf.ID, i, start, periodic, end)
+		case StatePaused:
+			i.Conf.State = StateRunning
+			if _, err := i.Action.Update(i.Conf); err != nil {
+				helpers.Logger("default state for start error please help me.")
+				return err
+			}
+			return Tick(ctx, i.Conf.ID, i, start, periodic, end)
 		case StateCancelled, StateDone:
+			    helpers.Logger(ErrIntervalCompleted)
 				return fmt.Errorf("%w: Cannot start", ErrIntervalCompleted)
 		default:
+			helpers.Logger("default state for start error please help me.")
 			return fmt.Errorf("%w: %d", ErrInvalidState, i.Conf.State)
-		}
+		}	
 }
 
 
@@ -163,5 +171,6 @@ func Pause(i *Instance) error {
 	if _, err := i.Action.Update(i.Conf); err != nil {
 		return err
 	}
+	helpers.Logger(strconv.Itoa(i.Conf.State))
 	return nil
 }
