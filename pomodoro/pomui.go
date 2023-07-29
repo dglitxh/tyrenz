@@ -180,7 +180,7 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		w.Update(
 		[]int{int(i.Duration/time.Minute), int(i.TimeElapsed/time.Minute)},
 		"", "",
-		fmt.Sprint(i.Duration-i.TimeElapsed),
+		fmt.Sprint(i.Duration-i.TimeElapsed)+" left",
 		redrawCh,
 		)
 	}
