@@ -57,7 +57,7 @@ var (
 )
 
 func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end Callback) error {
-	ticker:= time.NewTicker(instance.Conf.Duration)
+	ticker:= time.NewTicker(time.Second)
 	defer ticker.Stop()
 	i, err := instance.Action.GetById(id)	
 	if err != nil {
@@ -73,8 +73,12 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 	for {
 		select {
 		case <- ticker.C:
+			i, err := instance.Action.GetById(i.ID); if err != nil {
+				helpers.Logger(err.Error())
+				return err
+			}
 			if i.State == StatePaused {
-				continue
+				return nil
 			}
 			i.TimeElapsed += time.Second
 			if c, err := instance.Action.Update(i); err != nil {
@@ -83,7 +87,6 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 				i = c
 			}
 			instance.Conf = i
-			helpers.Logger(i.Duration)
 			periodic(i)
 		case <- expire:
 			helpers.Logger("Expiring......")
@@ -93,7 +96,6 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 			}
 			instance.Conf = i
 			end(i)
-
 		case <- ctx.Done():
 			i.State = StateCancelled
 			_, err := instance.Action.Update(i); if err != nil {
@@ -150,7 +152,7 @@ func Start(ctx context.Context, i *Instance,
 			if _, err := i.Action.Update(i.Conf); err != nil {
 				return err
 			}
-			Tick(ctx, i.Conf.ID, i, start, periodic, end)
+			fallthrough
 		case StatePaused:
 			i.Conf.State = StateRunning
 			if _, err := i.Action.Update(i.Conf); err != nil {
@@ -165,7 +167,6 @@ func Start(ctx context.Context, i *Instance,
 			helpers.Logger("default state for start error please help me.")
 			return fmt.Errorf("%w: %d", ErrInvalidState, i.Conf.State)
 		}	
-		return nil
 }
 
 
