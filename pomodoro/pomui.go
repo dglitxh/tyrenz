@@ -171,12 +171,11 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		helpers.Logger("Starting.....", message)
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
-	end := func(Config) {
+	end := func(i Config) {
 		w.Update([]int{}, "", "Nothing running...", "", redrawCh)
 	}
 
 	periodic := func(i Config) {
-		helpers.Logger(int(i.Duration/time.Second), "periodic duration")
 		w.Update(
 		[]int{int(i.Duration/time.Minute), int(i.TimeElapsed/time.Minute)},
 		"", "",
