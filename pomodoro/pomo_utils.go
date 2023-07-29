@@ -166,7 +166,8 @@ func Start(ctx context.Context, i *Instance,
 					NewInstance(i, CatShortBreak, 0, 0, 0)
 				}
 			}
-			return Tick(ctx, i.Conf.ID, i, start, periodic, end)
+		    Start(ctx, i, start, periodic, end)
+			return nil
 		case StateCancelled:
 				return fmt.Errorf("%w: Cannot start", ErrIntervalCompleted)
 		default:
