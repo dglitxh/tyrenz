@@ -6,16 +6,15 @@ package cmd
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/dglitxh/tyrenz/pomodoro"
 	"github.com/spf13/cobra"
 )
 
-var pomo time.Duration
-var shortbrk time.Duration
-var longbrk time.Duration
+var pomo int
+var shortbrk int
+var longbrk int
 
 // pomodoroCmd represents the pomodoro command
 var pomodoroCmd = &cobra.Command{
@@ -29,7 +28,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		i := &pomodoro.Instance{}
-		inst := pomodoro.NewInstance(i, int(pomo), int(longbrk), int(shortbrk))
+		inst := pomodoro.NewInstance(i, pomodoro.CatPomodoro, int(pomo), int(longbrk), int(shortbrk))
 		
 		app, err := inst.New()
 		if err != nil {
@@ -41,11 +40,11 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	pomodoroCmd.Flags().DurationVarP(&pomo, "pomo", "p", 25*time.Minute,
+	pomodoroCmd.Flags().IntVarP(&pomo, "pomo", "p", 25,
 	"Pomodoro duration")
-	pomodoroCmd.Flags().DurationVarP(&shortbrk, "short", "s", 5*time.Minute,
+	pomodoroCmd.Flags().IntVarP(&shortbrk, "short", "s", 5,
 	"Short break duration")
-	pomodoroCmd.Flags().DurationVarP(&longbrk, "long", "l", 15*time.Minute,
+	pomodoroCmd.Flags().IntVarP(&longbrk, "long", "l", 15,
 	"Long break duration")
 	rootCmd.AddCommand(pomodoroCmd)
 
