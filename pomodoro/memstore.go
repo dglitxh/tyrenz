@@ -31,6 +31,18 @@ func (st *InMemStore) Update (c Config) (Config, error) {
 	return c, nil
 }
 
+func (st *InMemStore) GetBreaks () int {
+	st.Lock()
+	defer st.Unlock()
+	var num int
+	for _, v := range st.Pomodoros {
+		if v.Category == CatShortBreak {
+			num += 1
+		}
+	}
+	return num
+}
+
 func (st *InMemStore) GetById (id int) (Config, error) {
 	st.Lock()
 	defer st.Unlock()
