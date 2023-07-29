@@ -3,6 +3,7 @@ package pomodoro
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/mum4k/termdash/cell"
@@ -124,7 +125,8 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 	errorCh chan<- error) (*donut.Donut, error) {
 	don, err := donut.New(
 		donut.Clockwise(),
-		donut.CellOpts(cell.FgColor(cell.ColorBlue)),
+		donut.ShowTextProgress(),
+		donut.CellOpts(cell.FgColor(cell.ColorGreen)),
 		)
 		if err != nil {
 			helpers.Logger("donut error : NewDonut")
@@ -134,11 +136,16 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 			for {
 				select {
 					case d := <-donUpdater:
-					helpers.Logger("Upadate doughnut.")
-					if d[0] <= d[1] {
-						errorCh <- don.Absolute(d[0], d[1])
+					if d[0] >= d[1] {
+						err := don.Absolute(d[1], d[0])
+						if err != nil {
+							helpers.Logger(err.Error(), "donut err still")
+							errorCh <- err
+						}
+						
 					}
 					case <-ctx.Done():
+						helpers.Logger(" Donut done still!")
 						return
 					}
 				}	
@@ -169,13 +176,13 @@ func NewButtonSet(ctx context.Context, config *Instance,
 	}
 
 	periodic := func(i Config) {
+		helpers.Logger(int(i.Duration/time.Second), "periodic duration")
 		w.Update(
-		[]int{int(i.Duration), int(i.TimeElapsed)},
+		[]int{int(i.Duration/time.Minute), int(i.TimeElapsed/time.Minute)},
 		"", "",
-		fmt.Sprint(i.Duration.Minutes()-i.TimeElapsed.Minutes()),
+		fmt.Sprint(i.Duration-i.TimeElapsed),
 		redrawCh,
 		)
-		helpers.Logger(i.TimeElapsed)
 	}
 
 		errorCh <- Start(ctx, config, start, periodic, end)
