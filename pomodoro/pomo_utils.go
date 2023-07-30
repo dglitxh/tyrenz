@@ -36,9 +36,16 @@ type Config struct {
 	State int
 }
 
+type UserSpecs struct {
+	LongBreak time.Duration
+	ShortBreak time.Duration
+	Interval time.Duration
+}
+
 type Instance struct {
 	Conf Config
 	Action  InMemStore
+	Specs   UserSpecs
 }
 
 var (
@@ -106,6 +113,7 @@ func NewInstance(inst *Instance, cat string, pomodoro, longbrk, shortbrk int) *I
 	i := Config{
 		Category: cat,
 	}
+	 
 	helpers.Logger(pomodoro, longbrk, shortbrk)
 	switch i.Category {
 		case CatPomodoro:
@@ -139,6 +147,7 @@ func NewInstance(inst *Instance, cat string, pomodoro, longbrk, shortbrk int) *I
 
 func Start(ctx context.Context, i *Instance,
 	start, periodic, end Callback) error {
+	spc := i.Specs
 	switch i.Conf.State {
 		case StateRunning:
 			return nil
@@ -158,12 +167,12 @@ func Start(ctx context.Context, i *Instance,
 		case StateDone:
 			lastind := len(i.Action.Pomodoros)-1
 			if i.Action.Pomodoros[lastind].Category != CatPomodoro {
-				NewInstance(i, CatPomodoro, 0, 0, 0)
+				NewInstance(i, CatPomodoro, int(spc.Interval), int(spc.LongBreak), int(spc.LongBreak))
 			}else {
 				if i.Action.GetBreaks() > 2 {
-					NewInstance(i, CatLongBreak, 0, 0, 0)
+					NewInstance(i, CatLongBreak, int(spc.Interval), int(spc.LongBreak), int(spc.LongBreak))
 				}else{
-					NewInstance(i, CatShortBreak, 0, 0, 0)
+					NewInstance(i, CatShortBreak, int(spc.Interval), int(spc.LongBreak), int(spc.LongBreak))
 				}
 			}
 		    Start(ctx, i, start, periodic, end)
