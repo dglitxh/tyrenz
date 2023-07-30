@@ -48,7 +48,7 @@ func (w *widgets) Update(timer []int, txtType, txtInfo, txtTimer string,
 
 func NewWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 	w := &widgets{}
-	dftext :=  "Idle, Press start to initiate next event..."
+	dftext :=  "Press start to initiate next event..."
 	var err error
 	w.updateDonTimer = make(chan []int)
 	w.updateTxtType = make(chan string)
@@ -178,7 +178,7 @@ func NewButtonSet(ctx context.Context, config *Instance,
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
 	end := func(i Config) {
-		w.Update([]int{}, "Idle", "Idle, press start button to intiate next event", "", redrawCh)
+		w.Update([]int{}, "Idle", "Press start button to intiate next event", "", redrawCh)
 	}
 
 	periodic := func(i Config) {
