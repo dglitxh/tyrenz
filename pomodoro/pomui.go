@@ -69,7 +69,7 @@ func NewWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 		helpers.Logger("new text error")
 		return nil, err
 	}
-	w.txtTimer, err = NewText(ctx, "", w.updateTxtTimer, errorCh)
+	w.txtTimer, err = NewText(ctx, " ", w.updateTxtTimer, errorCh)
 	if err != nil {
 		helpers.Logger("new text error")
 		return nil, err
@@ -174,7 +174,7 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		if i.Category == CatPomodoro {
 			message = "Focus on your task"
 		}
-		helpers.Logger("Timer started...", message)
+		helpers.Logger("Timer started...")
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
 	end := func(i Config) {
