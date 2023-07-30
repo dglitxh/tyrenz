@@ -172,7 +172,7 @@ func NewButtonSet(ctx context.Context, config *Instance,
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
 	end := func(i Config) {
-		w.Update([]int{}, "", "Nothing running...", "", redrawCh)
+		w.Update([]int{}, "", "Idle, press start button to start next event...", "", redrawCh)
 	}
 
 	periodic := func(i Config) {
