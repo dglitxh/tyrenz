@@ -80,7 +80,9 @@ func NewWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 func NewText(ctx context.Context, dftext string, updateText <-chan string,
 	errorCh chan<- error) (*text.Text, error) {
 	txt, err := text.New()
-	txt.Write(dftext)
+	if err := txt.Write(dftext); err != nil {
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -172,11 +174,11 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		if i.Category == CatPomodoro {
 			message = "Focus on your task"
 		}
-		helpers.Logger("Starting.....", message)
+		helpers.Logger("Timer started...", message)
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
 	end := func(i Config) {
-		w.Update([]int{}, "", "Idle, press start button to start next event...", "", redrawCh)
+		w.Update([]int{}, "Idle", "Idle, press start button to intiate next event", "", redrawCh)
 	}
 
 	periodic := func(i Config) {
@@ -187,9 +189,7 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		redrawCh,
 		)
 	}
-
 		errorCh <- Start(ctx, config, start, periodic, end)
-
 	}
 
 	
@@ -233,6 +233,5 @@ func NewButtonSet(ctx context.Context, config *Instance,
 	if err != nil {
 		return nil, err
 	}
-	
 	return &Buttons{btStart, btPause}, nil
 }
