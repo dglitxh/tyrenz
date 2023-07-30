@@ -89,7 +89,7 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 			instance.Conf = i
 			periodic(i)
 		case <- expire:
-			helpers.Logger("Expiring......")
+			helpers.Logger("Interval done.")
 			i.State = StateDone
 			i, err := instance.Action.Update(i); if err != nil {
 				return nil
