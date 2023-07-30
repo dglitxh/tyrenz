@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/dglitxh/tyrenz/pomodoro"
@@ -19,17 +20,18 @@ var longbrk int
 // pomodoroCmd represents the pomodoro command
 var pomodoroCmd = &cobra.Command{
 	Use:   "pomodoro",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "A Simple yet powerful pomodoro timer",
+	Long: `This app is a simple pomodoro timer with a simple interface. you can specify time intervals 
+	      pomodoro, long and short breaks. Although there is a default duration which is widely used.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		i := &pomodoro.Instance{}
-		inst := pomodoro.NewInstance(i, pomodoro.CatPomodoro, int(pomo), int(longbrk), int(shortbrk))
-		
+		s := pomodoro.UserSpecs{
+		LongBreak: time.Duration(longbrk),
+		ShortBreak: time.Duration(shortbrk),
+		Interval: time.Duration(pomo),
+	}
+		i.Specs = s
+		inst := pomodoro.NewInstance(i, pomodoro.CatPomodoro, int(s.Interval), int(s.LongBreak), int(s.ShortBreak))
 		app, err := inst.New()
 		if err != nil {
 			helpers.Logger("default state for start error please help me.")
