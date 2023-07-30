@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/dglitxh/tyrenz/helpers"
@@ -64,7 +63,6 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 		helpers.Logger(err.Error(), "tick")
 		return err
 	}
-	helpers.Logger(strconv.Itoa(i.State), "stateddd")
 	if i.State == StateNotStarted {
 		helpers.Logger("State Defined")
 	}
@@ -113,8 +111,9 @@ func NewInstance(inst *Instance, cat string, pomodoro, longbrk, shortbrk int) *I
 	i := Config{
 		Category: cat,
 	}
-	 
-	helpers.Logger(pomodoro, longbrk, shortbrk)
+	helpers.Logger("pomo: "+fmt.Sprint(pomodoro),
+	 		"long: "+fmt.Sprint(longbrk),
+	  		"short:"+fmt.Sprint(shortbrk))
 	switch i.Category {
 		case CatPomodoro:
 			if pomodoro < 1 {
