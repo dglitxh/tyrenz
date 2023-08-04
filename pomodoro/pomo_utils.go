@@ -12,11 +12,19 @@ import (
 type Callback func(Config)
 
 const (
-	CatPomodoro = "Pomodoro"
+	CatPomodoro   = "Pomodoro"
 	CatShortBreak = "ShortBreak"
-	CatLongBreak = "LongBreak"
+	CatLongBreak  = "LongBreak"
 )
 
+
+type Actions interface {
+	Create(c Config) (string, error)
+	Update(c Config) error
+	GetById(id int) (Config, error)
+	Delete(id int) (string, error)
+	GetCompleted(id int) []Config
+}
 
 const (
 	StateNotStarted = iota
@@ -27,7 +35,7 @@ const (
 )
 
 type Config struct {
-	ID int
+	ID        int
 	StartTime time.Time
 	Duration time.Duration
 	TimeElapsed time.Duration
@@ -42,17 +50,18 @@ type UserSpecs struct {
 }
 
 type Instance struct {
+
 	Conf Config
 	Action  InMemStore
 	Specs   UserSpecs
 }
 
 var (
-	ErrNoIntervals = errors.New("no intervals")
+	ErrNoIntervals        = errors.New("no intervals")
 	ErrIntervalNotRunning = errors.New("interval not running")
-	ErrIntervalCompleted = errors.New("interval is completed or cancelled")
-	ErrInvalidState = errors.New("invalid state") 
-	ErrInvalidID = errors.New("invalid id")
+	ErrIntervalCompleted  = errors.New("interval is completed or cancelled")
+	ErrInvalidState       = errors.New("invalid state")
+	ErrInvalidID          = errors.New("invalid id")
 )
 
 func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end Callback) error {
@@ -144,7 +153,7 @@ func NewInstance(inst *Instance, cat string, pomodoro, longbrk, shortbrk int) *I
 	return inst
 }
 
-func Start(ctx context.Context, i *Instance,
+func (i *Instance) Start(ctx context.Context,
 	start, periodic, end Callback) error {
 	spc := i.Specs
 	switch i.Conf.State {
@@ -196,3 +205,4 @@ func Pause(i *Instance) error {
 	helpers.Logger("Timer paused")
 	return nil
 }
+

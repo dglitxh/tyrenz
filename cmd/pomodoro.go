@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 pomoCmd
-
 */
 package cmd
 
@@ -33,6 +32,7 @@ var pomodoroCmd = &cobra.Command{
 		i.Specs = s
 		inst := pomodoro.NewInstance(i, pomodoro.CatPomodoro, int(s.Interval), int(s.LongBreak), int(s.ShortBreak))
 		app, err := inst.New()
+
 		if err != nil {
 			helpers.Logger("default state for start error please help me.")
 			fmt.Println(err)
@@ -48,6 +48,7 @@ func init() {
 	"Short break duration")
 	pomodoroCmd.Flags().IntVarP(&longbrk, "long", "l", 15,
 	"Long break duration")
+
 	rootCmd.AddCommand(pomodoroCmd)
 
 	// Here you will define your flags and configuration settings.

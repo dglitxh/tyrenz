@@ -14,14 +14,14 @@ import (
 )
 
 type widgets struct {
-	donTimer *donut.Donut
-	disType *segmentdisplay.SegmentDisplay
-	txtInfo *text.Text
-	txtTimer *text.Text
+	donTimer       *donut.Donut
+	disType        *segmentdisplay.SegmentDisplay
+	txtInfo        *text.Text
+	txtTimer       *text.Text
 	updateDonTimer chan []int
-	updateTxtInfo chan string
+	updateTxtInfo  chan string
 	updateTxtTimer chan string
-	updateTxtType chan string
+	updateTxtType  chan string
 }
 
 type Buttons struct {
@@ -89,13 +89,13 @@ func NewText(ctx context.Context, dftext string, updateText <-chan string,
 	go func() {
 		for {
 			select {
-				case t := <-updateText:
-					txt.Reset()
-					errorCh <- txt.Write(t)
-				case <-ctx.Done():
-					return
+			case t := <-updateText:
+				txt.Reset()
+				errorCh <- txt.Write(t)
+			case <-ctx.Done():
+				return
 			}
-		}	
+		}
 	}()
 	return txt, nil
 }
@@ -123,6 +123,7 @@ func NewSegmentDisplay(ctx context.Context, updateText <-chan string,
 					return
 				}
 			}
+		}
 	}()
 	return sd, nil
 }
@@ -159,7 +160,7 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 		return don, nil
 }
 
-func NewButtonSet(ctx context.Context, config *Instance,
+func (inst *Instance) NewButtonSet(ctx context.Context,
 	w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	startInterval := func() {
 		_, err := config.Action.GetById(config.Conf.ID)
@@ -192,28 +193,28 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		errorCh <- Start(ctx, config, start, periodic, end)
 	}
 
-	
-
 	pauseInterval := func() {
+
 		_, err := config.Action.GetById(config.Conf.ID)
+
 		if err != nil {
 			errorCh <- err
 			return
 		}
-		if err := Pause(config); err != nil {
+		if err := inst.Pause(); err != nil {
 			if err == ErrIntervalNotRunning {
 				return
 			}
 			errorCh <- err
-			return 
+			return
 		}
 		w.Update([]int{}, "", "Paused... press start to continue", "", redrawCh)
 	}
 
 	btStart, err := button.New("(s)tart", func() error {
 		go startInterval()
-			return nil
-		},
+		return nil
+	},
 		button.GlobalKey('s'),
 		button.WidthFor("(p)ause"),
 		button.Height(2),
@@ -224,8 +225,8 @@ func NewButtonSet(ctx context.Context, config *Instance,
 
 	btPause, err := button.New("(p)ause", func() error {
 		go pauseInterval()
-			return nil
-		},
+		return nil
+	},
 		button.FillColor(cell.ColorNumber(220)),
 		button.GlobalKey('p'),
 		button.Height(2),
