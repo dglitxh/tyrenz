@@ -15,7 +15,7 @@ type Step struct {
 
 type Process []Step
 
-func (p *Process) NewStep (name, dir, cmd, msg string, args []string)  {
+func (p *Process) NewStep (name, dir, cmd, msg string, args []string) Step {
 	step := Step{
 		name: name,
 		dir: dir,
@@ -24,6 +24,7 @@ func (p *Process) NewStep (name, dir, cmd, msg string, args []string)  {
 		args: args,
 	}
 	*p = append(*p, step)
+	return step
 }
 
 func (s Step) Execute () {
