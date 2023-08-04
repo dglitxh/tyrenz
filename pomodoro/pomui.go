@@ -3,7 +3,9 @@ package pomodoro
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/mum4k/termdash/cell"
 	"github.com/mum4k/termdash/widgets/button"
 	"github.com/mum4k/termdash/widgets/donut"
@@ -46,6 +48,7 @@ func (w *widgets) Update(timer []int, txtType, txtInfo, txtTimer string,
 
 func NewWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 	w := &widgets{}
+	dftext :=  "Press start to initiate next event..."
 	var err error
 	w.updateDonTimer = make(chan []int)
 	w.updateTxtType = make(chan string)
@@ -53,26 +56,33 @@ func NewWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 	w.updateTxtTimer = make(chan string)
 	w.donTimer, err = NewDonut(ctx, w.updateDonTimer, errorCh)
 	if err != nil {
+		helpers.Logger("Donut creation error")
 		return nil, err
 	}
 	w.disType, err = NewSegmentDisplay(ctx, w.updateTxtType, errorCh)
 	if err != nil {
+		helpers.Logger("Seg disp err, w.distype ui")
 		return nil, err
 	}
-	w.txtInfo, err = NewText(ctx, w.updateTxtInfo, errorCh)
+	w.txtInfo, err = NewText(ctx, dftext, w.updateTxtInfo, errorCh)
 	if err != nil {
+		helpers.Logger("new text error")
 		return nil, err
 	}
-	w.txtTimer, err = NewText(ctx, w.updateTxtTimer, errorCh)
+	w.txtTimer, err = NewText(ctx, " ", w.updateTxtTimer, errorCh)
 	if err != nil {
+		helpers.Logger("new text error")
 		return nil, err
 	}
 	return w, nil
 }
 
-func NewText(ctx context.Context, updateText <-chan string,
+func NewText(ctx context.Context, dftext string, updateText <-chan string,
 	errorCh chan<- error) (*text.Text, error) {
 	txt, err := text.New()
+	if err := txt.Write(dftext); err != nil {
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -93,21 +103,25 @@ func NewText(ctx context.Context, updateText <-chan string,
 func NewSegmentDisplay(ctx context.Context, updateText <-chan string,
 	errorCh chan<- error) (*segmentdisplay.SegmentDisplay, error) {
 	sd, err := segmentdisplay.New()
+	sd.Write([]*segmentdisplay.TextChunk{
+		segmentdisplay.NewChunk("Welcome"), })
 	if err != nil {
+		helpers.Logger("Seg Disp error")
 		return nil, err
 	}
 	go func() {
 		for {
 			select {
-			case t := <-updateText:
-				if t == "" {
-					t = " "
+				case t := <-updateText:
+					if t == "" {
+						t = " "
+					}
+					errorCh <- sd.Write([]*segmentdisplay.TextChunk{
+						segmentdisplay.NewChunk(t),
+					})
+				case <-ctx.Done():
+					return
 				}
-				errorCh <- sd.Write([]*segmentdisplay.TextChunk{
-					segmentdisplay.NewChunk(t),
-				})
-			case <-ctx.Done():
-				return
 			}
 		}
 	}()
@@ -118,58 +132,71 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 	errorCh chan<- error) (*donut.Donut, error) {
 	don, err := donut.New(
 		donut.Clockwise(),
-		donut.CellOpts(cell.FgColor(cell.ColorBlue)),
-	)
-	if err != nil {
-		return nil, err
-	}
-	go func() {
-		for {
-			select {
-			case d := <-donUpdater:
-				if d[0] <= d[1] {
-					errorCh <- don.Absolute(d[0], d[1])
-				}
-			case <-ctx.Done():
-				return
-			}
+		donut.ShowTextProgress(),
+		donut.CellOpts(cell.FgColor(cell.ColorGreen)),
+		)
+		if err != nil {
+			helpers.Logger("donut error : NewDonut")
+			return nil, err
 		}
-	}()
-	return don, nil
+		go func() {
+			for {
+				select {
+					case d := <-donUpdater:
+					if d[0] >= d[1] {
+						err := don.Absolute(d[1], d[0])
+						if err != nil {
+							helpers.Logger(err.Error(), "donut err still")
+							errorCh <- err
+						}
+						
+					}
+					case <-ctx.Done():
+						helpers.Logger(" Donut done still!")
+						return
+					}
+				}	
+		}()
+		return don, nil
 }
 
 func (inst *Instance) NewButtonSet(ctx context.Context,
 	w *widgets, redrawCh chan<- bool, errorCh chan<- error) (*Buttons, error) {
 	startInterval := func() {
-		_, err := inst.Action.GetById(inst.Conf.ID)
-		fmt.Println(inst)
-		errorCh <- err
-		start := func(c Config) {
-			message := "Take a break"
-			if c.Category == CatPomodoro {
-				message = "Focus on your task"
-			}
-			w.Update([]int{}, c.Category, message, "", redrawCh)
+		_, err := config.Action.GetById(config.Conf.ID)
+		if err != nil {
+			errorCh <- err
+			return
 		}
-		end := func(Config) {
-			w.Update([]int{}, "", "Nothing running...", "", redrawCh)
+		start := func(i Config) {
+		i.State = StateRunning
+		config.Conf.State = i.State
+		message := "Take a break"
+		if i.Category == CatPomodoro {
+			message = "Focus on your task"
 		}
+		helpers.Logger("Timer started...")
+	w.Update([]int{}, i.Category, message, "", redrawCh)
+	}
+	end := func(i Config) {
+		w.Update([]int{}, "Idle", "Press start button to intiate next event", "", redrawCh)
+	}
 
-		periodic := func(c Config) {
-			w.Update(
-				[]int{int(c.Duration), int(c.TimeLeft)},
-				"", "",
-				fmt.Sprint(c.Duration-c.TimeLeft),
-				redrawCh,
-			)
-		}
-
-		errorCh <- inst.Start(ctx, start, periodic, end)
-
+	periodic := func(i Config) {
+		w.Update(
+		[]int{int(i.Duration/time.Minute), int(i.TimeElapsed/time.Minute)},
+		"", "",
+		fmt.Sprint(i.Duration-i.TimeElapsed)+" left",
+		redrawCh,
+		)
+	}
+		errorCh <- Start(ctx, config, start, periodic, end)
 	}
 
 	pauseInterval := func() {
-		_, err := inst.Action.GetById(inst.Conf.ID)
+
+		_, err := config.Action.GetById(config.Conf.ID)
+
 		if err != nil {
 			errorCh <- err
 			return
@@ -192,6 +219,9 @@ func (inst *Instance) NewButtonSet(ctx context.Context,
 		button.WidthFor("(p)ause"),
 		button.Height(2),
 	)
+	if err != nil {
+			return nil, err
+	}
 
 	btPause, err := button.New("(p)ause", func() error {
 		go pauseInterval()
@@ -201,9 +231,6 @@ func (inst *Instance) NewButtonSet(ctx context.Context,
 		button.GlobalKey('p'),
 		button.Height(2),
 	)
-	if err != nil {
-		return nil, err
-	}
 	if err != nil {
 		return nil, err
 	}

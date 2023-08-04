@@ -3,6 +3,8 @@ package pomodoro
 import (
 	"fmt"
 	"sync"
+
+	"github.com/dglitxh/tyrenz/helpers"
 )
 
 type InMemStore struct {
@@ -18,14 +20,28 @@ func (st *InMemStore) Create(c Config) (int, error) {
 	return c.ID, nil
 }
 
-func (st *InMemStore) Update(c Config) error {
+
+func (st *InMemStore) Update (c Config) (Config, error) {
 	st.Lock()
 	defer st.Unlock()
-	if c.ID == 0 {
-		return fmt.Errorf("%w: %d", ErrInvalidID, c.ID)
+	if c.ID == 0 || c.ID > len(st.Pomodoros)+1 {
+		helpers.Logger(ErrInvalidID)
+		return Config{}, fmt.Errorf("%w: %d", ErrInvalidID, c.ID)
 	}
 	st.Pomodoros[c.ID-1] = c
-	return nil
+	return c, nil
+}
+
+func (st *InMemStore) GetBreaks () int {
+	st.Lock()
+	defer st.Unlock()
+	var num int
+	for _, v := range st.Pomodoros {
+		if v.Category == CatShortBreak {
+			num += 1
+		}
+	}
+	return num
 }
 
 func (st *InMemStore) GetById(id int) (Config, error) {

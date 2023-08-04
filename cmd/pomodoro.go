@@ -7,29 +7,34 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/dglitxh/tyrenz/pomodoro"
 	"github.com/spf13/cobra"
 )
 
-var pomo time.Duration
-var shortbrk time.Duration
-var longbrk time.Duration
+var pomo int
+var shortbrk int
+var longbrk int
 
 // pomodoroCmd represents the pomodoro command
 var pomodoroCmd = &cobra.Command{
 	Use:   "pomodoro",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "A Simple yet powerful pomodoro timer",
+	Long: `This app is a simple pomodoro timer with a simple interface. you can specify time intervals 
+	      pomodoro, long and short breaks. Although there is a default duration which is widely used.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		i := &pomodoro.Instance{}
-		instance := i.NewInstance(int(pomo), int(longbrk), int(shortbrk))
-		app, err := instance.New()
+		s := pomodoro.UserSpecs{
+		LongBreak: time.Duration(longbrk),
+		ShortBreak: time.Duration(shortbrk),
+		Interval: time.Duration(pomo),
+	}
+		i.Specs = s
+		inst := pomodoro.NewInstance(i, pomodoro.CatPomodoro, int(s.Interval), int(s.LongBreak), int(s.ShortBreak))
+		app, err := inst.New()
+
 		if err != nil {
+			helpers.Logger("default state for start error please help me.")
 			fmt.Println(err)
 		}
 		app.Run()
@@ -37,12 +42,13 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	pomodoroCmd.Flags().DurationVarP(&pomo, "pomo", "p", 25*time.Minute,
-		"Pomodoro duration")
-	pomodoroCmd.Flags().DurationVarP(&shortbrk, "short", "s", 5*time.Minute,
-		"Short break duration")
-	pomodoroCmd.Flags().DurationVarP(&longbrk, "long", "l", 15*time.Minute,
-		"Long break duration")
+	pomodoroCmd.Flags().IntVarP(&pomo, "pomo", "p", 25,
+	"Pomodoro duration")
+	pomodoroCmd.Flags().IntVarP(&shortbrk, "short", "s", 5,
+	"Short break duration")
+	pomodoroCmd.Flags().IntVarP(&longbrk, "long", "l", 15,
+	"Long break duration")
+
 	rootCmd.AddCommand(pomodoroCmd)
 
 	// Here you will define your flags and configuration settings.
