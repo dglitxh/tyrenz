@@ -27,7 +27,7 @@ func (p *Process) NewStep (name, dir, cmd, msg string, args []string)  {
 }
 
 func (s Step) Execute () {
-	task := exec.Command("")
+	task := exec.Command(s.cmd, s.args...)
 	task.Dir = s.dir
 }
 
