@@ -90,7 +90,7 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 			helpers.Logger("Interval done.")
 			i.State = StateDone
 			i, err := instance.Action.Update(i); if err != nil {
-				return nil
+				return err
 			}
 			instance.Conf = i
 			end(i)
