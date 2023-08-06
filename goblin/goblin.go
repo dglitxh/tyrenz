@@ -6,30 +6,30 @@ import (
 )
 
 type Step struct {
-	name string
-	dir string
-	cmd string
-	msg string 
-	args []string
+	Name string
+	Dir string
+	Cmd string
+	Msg string 
+	Args []string
 }
 
 type Process []Step
 
-func (p *Process) NewStep (name, dir, cmd, msg string, args []string) Step {
+func (p *Process) NewStep (s Step) Step {
 	step := Step{
-		name: name,
-		dir: dir,
-		msg: msg,
-		cmd: msg,
-		args: args,
+		Name: s.Name,
+		Dir: s.Dir,
+		Msg: s.Msg,
+		Cmd: s.Cmd,
+		Args: s.Args,
 	}
 	*p = append(*p, step)
 	return step
 }
 
 func (s Step) Execute () error{
-	task := exec.Command(s.cmd, s.args...)
-	task.Dir = s.dir
+	task := exec.Command(s.Cmd, s.Args...)
+	task.Dir = s.Dir
 	if err := task.Run(); err != nil {
 		return err
 	}
