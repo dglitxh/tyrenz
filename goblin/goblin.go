@@ -1,7 +1,7 @@
 package goblin
 
 import (
-	"context"
+	"fmt"
 	"os/exec"
 )
 
@@ -36,9 +36,12 @@ func (s Step) Execute () error{
 	return nil 
 }
 
-func (p *Process) Run (ctx context.Context) error {
+func (p *Process) Run () error {
 	for _, v := range *p {
-		v.Execute()
+		if err := v.Execute(); err != nil {
+			fmt.Printf("%v at %s", err, v.Name)
+			return err
+		}
 	}
 	return nil 
 }
