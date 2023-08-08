@@ -56,22 +56,22 @@ func NewWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 	w.updateTxtTimer = make(chan string)
 	w.donTimer, err = NewDonut(ctx, w.updateDonTimer, errorCh)
 	if err != nil {
-		helpers.Logger("Donut creation error")
+		helpers.Logger(fn, "Donut creation error")
 		return nil, err
 	}
 	w.disType, err = NewSegmentDisplay(ctx, w.updateTxtType, errorCh)
 	if err != nil {
-		helpers.Logger("Seg disp err, w.distype ui")
+		helpers.Logger(fn, "Seg disp err, w.distype ui")
 		return nil, err
 	}
 	w.txtInfo, err = NewText(ctx, dftext, w.updateTxtInfo, errorCh)
 	if err != nil {
-		helpers.Logger("new text error")
+		helpers.Logger(fn, "new text error")
 		return nil, err
 	}
 	w.txtTimer, err = NewText(ctx, " ", w.updateTxtTimer, errorCh)
 	if err != nil {
-		helpers.Logger("new text error")
+		helpers.Logger(fn, "new text error")
 		return nil, err
 	}
 	return w, nil
@@ -106,7 +106,7 @@ func NewSegmentDisplay(ctx context.Context, updateText <-chan string,
 	sd.Write([]*segmentdisplay.TextChunk{
 		segmentdisplay.NewChunk("Welcome"), })
 	if err != nil {
-		helpers.Logger("Seg Disp error")
+		helpers.Logger(fn, "Seg Disp error")
 		return nil, err
 	}
 	go func() {
@@ -135,7 +135,7 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 		donut.CellOpts(cell.FgColor(cell.ColorGreen)),
 		)
 		if err != nil {
-			helpers.Logger("donut error : NewDonut")
+			helpers.Logger(fn, "donut error : NewDonut")
 			return nil, err
 		}
 		go func() {
@@ -145,13 +145,13 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 					if d[0] >= d[1] {
 						err := don.Absolute(d[1], d[0])
 						if err != nil {
-							helpers.Logger(err.Error(), "donut err still")
+							helpers.Logger(fn, err.Error(), "donut err still")
 							errorCh <- err
 						}
 						
 					}
 					case <-ctx.Done():
-						helpers.Logger(" Donut done still!")
+						helpers.Logger(fn, " Donut done still!")
 						return
 					}
 				}	
@@ -174,7 +174,7 @@ func NewButtonSet(ctx context.Context, config *Instance,
 		if i.Category == CatPomodoro {
 			message = "Focus on your task"
 		}
-		helpers.Logger("Timer started...")
+		helpers.Logger(fn, "Timer started...")
 	w.Update([]int{}, i.Category, message, "", redrawCh)
 	}
 	end := func(i Config) {

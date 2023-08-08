@@ -24,7 +24,7 @@ func (st *InMemStore) Update (c Config) (Config, error) {
 	st.Lock()
 	defer st.Unlock()
 	if c.ID == 0 || c.ID > len(st.Pomodoros)+1 {
-		helpers.Logger(ErrInvalidID)
+		helpers.Logger(fn, ErrInvalidID)
 		return Config{}, fmt.Errorf("%w: %d", ErrInvalidID, c.ID)
 	}
 	st.Pomodoros[c.ID-1] = c

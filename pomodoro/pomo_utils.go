@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/dglitxh/tyrenz/helpers"
@@ -35,6 +36,8 @@ type Config struct {
 	State int
 }
 
+var fn *os.File = helpers.CreateLogFile(".pomologs")
+
 type UserSpecs struct {
 	LongBreak time.Duration
 	ShortBreak time.Duration
@@ -60,11 +63,11 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 	defer ticker.Stop()
 	i, err := instance.Action.GetById(id)	
 	if err != nil {
-		helpers.Logger(err.Error(), "tick")
+		helpers.Logger(fn, err.Error(), "tick")
 		return err
 	}
 	if i.State == StateNotStarted {
-		helpers.Logger("State Defined")
+		helpers.Logger(fn, "State Defined")
 	}
 	expire := time.After(i.Duration-i.TimeElapsed)
 	start(i)
@@ -72,7 +75,7 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 		select {
 		case <- ticker.C:
 			i, err := instance.Action.GetById(i.ID); if err != nil {
-				helpers.Logger(err.Error())
+				helpers.Logger(fn, err.Error())
 				return err
 			}
 			if i.State == StatePaused {
@@ -87,7 +90,7 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 			instance.Conf = i
 			periodic(i)
 		case <- expire:
-			helpers.Logger("Interval done.")
+			helpers.Logger(fn, "Interval done.")
 			i.State = StateDone
 			i, err := instance.Action.Update(i); if err != nil {
 				return err
@@ -98,7 +101,7 @@ func Tick (ctx context.Context, id int, instance *Instance, start, periodic, end
 		case <- ctx.Done():
 			i.State = StateCancelled
 			_, err := instance.Action.Update(i); if err != nil {
-				helpers.Logger(err.Error(), "tick ctx done err")
+				helpers.Logger(fn, err.Error(), "tick ctx done err")
 				return err
 			}
 			
@@ -111,7 +114,7 @@ func NewInstance(inst *Instance, cat string, pomodoro, longbrk, shortbrk int) *I
 	i := Config{
 		Category: cat,
 	}
-	helpers.Logger("pomo: "+fmt.Sprint(pomodoro),
+	helpers.Logger(fn, "pomo: "+fmt.Sprint(pomodoro),
 	 		"long: "+fmt.Sprint(longbrk),
 	  		"short:"+fmt.Sprint(shortbrk))
 	switch i.Category {
@@ -139,8 +142,8 @@ func NewInstance(inst *Instance, cat string, pomodoro, longbrk, shortbrk int) *I
 	i.ID = len(inst.Action.Pomodoros )+1
 	inst.Conf = i
 	inst.Action.Create(inst.Conf)
-	helpers.Logger("New Instance created.")
-	helpers.Logger(fmt.Sprint(inst.Action.Pomodoros), inst.Conf)
+	helpers.Logger(fn, "New Instance created.")
+	helpers.Logger(fn, fmt.Sprint(inst.Action.Pomodoros), inst.Conf)
 	return inst
 }
 
@@ -190,9 +193,9 @@ func Pause(i *Instance) error {
 	}
 	i.Conf.State = StatePaused
 	if _, err := i.Action.Update(i.Conf); err != nil {
-		helpers.Logger(err.Error(), "Pause")
+		helpers.Logger(fn, err.Error(), "Pause")
 		return err
 	}
-	helpers.Logger("Timer paused")
+	helpers.Logger(fn, "Timer paused")
 	return nil
 }

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/dglitxh/tyrenz/pomodoro"
 	"github.com/spf13/cobra"
 )
@@ -34,7 +33,6 @@ var pomodoroCmd = &cobra.Command{
 		inst := pomodoro.NewInstance(i, pomodoro.CatPomodoro, int(s.Interval), int(s.LongBreak), int(s.ShortBreak))
 		app, err := inst.New()
 		if err != nil {
-			helpers.Logger("default state for start error please help me.")
 			fmt.Println(err)
 		}
 		app.Run()
