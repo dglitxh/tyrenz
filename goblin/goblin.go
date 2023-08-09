@@ -8,7 +8,7 @@ import (
 	"github.com/dglitxh/tyrenz/helpers"
 )
 
-var logfn *os.File = helpers.CreateLogFile(".goblogs.txt")
+var logfn *os.File = helpers.CreateLogFile(".goblogs")
 
 type Step struct {
 	Name string
