@@ -2,6 +2,8 @@ package gobliin_test
 
 import (
 	"fmt"
+	"os"
+	"reflect"
 	"testing"
 
 	"github.com/dglitxh/tyrenz/goblin"
@@ -37,19 +39,19 @@ func  TestAddStep (t *testing.T) {
 	
 	t.Run(step1.Name, func(t *testing.T) {
 		s := proc.NewStep(step1)
-		if step1.Name != s.Name {
+		if !reflect.DeepEqual(s.Name, step1.Name) {
 			t.Errorf("expected %v to be %v", step1.Name, s.Name)
 		}
 	})
 		t.Run(step2.Name, func(t *testing.T) {
 		s := proc.NewStep(step2)
-		if step2.Name != s.Name {
+		if !reflect.DeepEqual(s.Name, step2.Name) {
 			t.Errorf("expected %v to be %v", step2.Name, s.Name)
 		}
 	})
 	t.Run(step3.Name, func(t *testing.T) {
 		s := proc.NewStep(step3)
-		if step3.Name != s.Name {
+		if !reflect.DeepEqual(s.Name, step3.Name) {
 			t.Errorf("expected %v to be %v", step3.Name, s.Name)
 		}
 	})
@@ -57,6 +59,7 @@ func  TestAddStep (t *testing.T) {
 
 func TestRun(t *testing.T) {
 	fmt.Println(proc)
+	defer os.RemoveAll("./temp")
 	t.Run("Execution", func(t *testing.T) {
 	if err := proc.Run(); err != nil {
 		t.Errorf("%v occurred while executing tasks", err)
