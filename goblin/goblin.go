@@ -13,11 +13,11 @@ import (
 var logfn *os.File = helpers.CreateLogFile(".goblogs")
 
 type Step struct {
-	Name string
-	Dir string
-	Cmd string
-	Msg string 
-	Args []string
+	Name string `json:"name"`
+	Dir string	`json:"dir"`
+	Cmd string	`json:"cmd"`
+	Msg string  `json:"msg"`
+	Args []string `json:"args"`
 }
 
 type Process []Step
@@ -35,7 +35,7 @@ func (p *Process) NewStep (s Step) Step {
 }
 
 func (s Step) Execute () error{
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*90)
 	defer cancel()
 	task := exec.CommandContext(ctx, s.Cmd, s.Args...)
 	task.Dir = s.Dir
