@@ -34,7 +34,7 @@ func (p *Process) NewStep (s Step) Step {
 	return step
 }
 
-func (s Step) Execute () error{
+func (s Step) TimeOutExecute () error{
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*90)
 	defer cancel()
 	task := exec.CommandContext(ctx, s.Cmd, s.Args...)
@@ -44,6 +44,15 @@ func (s Step) Execute () error{
 			helpers.Logger(logfn, fmt.Sprintf("Error: %v, timeout", err))
 			return fmt.Errorf("error: %v, timeout", err)
 		}
+		return err
+	}
+	return nil 
+}
+
+func (s Step) Execute () error{
+	task := exec.Command(s.Cmd, s.Args...)
+	task.Dir = s.Dir
+	if err := task.Run(); err != nil {
 		return err
 	}
 	return nil 
