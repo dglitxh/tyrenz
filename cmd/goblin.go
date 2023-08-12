@@ -5,11 +5,15 @@ Copyright © 2023 ydzly <EMAIL ADDRESS>
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 
+	"github.com/dglitxh/tyrenz/goblin"
 	"github.com/spf13/cobra"
 )
 
+var timeout bool
 // goblinCmd represents the goblin command
 var goblinCmd = &cobra.Command{
 	Use:   "goblin",
@@ -21,11 +25,19 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("goblin called")
+		var proc goblin.Process
+		step, err := os.ReadFile("goblinConfig.json"); if err != nil {
+			fmt.Println(err)
+		}
+		if err := json.Unmarshal([]byte(step), &proc); err != nil {
+			fmt.Println(err)
+		}
+		proc.Run()
 	},
 }
 
 func init() {
+	goblinCmd.Flags().BoolVarP(&timeout, "timeout", "t", false, "sets a timeout for eache process")
 	rootCmd.AddCommand(goblinCmd)
 
 	// Here you will define your flags and configuration settings.
