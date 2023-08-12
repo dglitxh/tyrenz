@@ -35,7 +35,7 @@ func (p *Process) NewStep (s Step) Step {
 }
 
 func (s Step) TimeOutExecute () error{
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*90)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120)
 	defer cancel()
 	task := exec.CommandContext(ctx, s.Cmd, s.Args...)
 	task.Dir = s.Dir
