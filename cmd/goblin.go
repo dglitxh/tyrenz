@@ -32,7 +32,7 @@ to quickly create a Cobra application.`,
 		if err := json.Unmarshal([]byte(step), &proc); err != nil {
 			fmt.Println(err)
 		}
-		proc.Run()
+		proc.Run(timeout)
 	},
 }
 
