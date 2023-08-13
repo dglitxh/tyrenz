@@ -58,13 +58,21 @@ func (s Step) Execute () error{
 	return nil 
 }
 
-func (p *Process) Run () error {
+func (p *Process) Run (timeout bool) error {
 	
 	for i, v := range *p {
-		if err := v.Execute(); err != nil {
-			helpers.Logger(logfn, fmt.Sprintf("Error: %v at step %d (%s)" , err, i, v.Name))
-			return err
+		if !timeout {
+			if err := v.Execute(); err != nil {
+				helpers.Logger(logfn, fmt.Sprintf("Error: %v at step %d (%s)" , err, i, v.Name))
+				return err
+		} else {
+			if err := v.TimeOutExecute(); err != nil {
+				helpers.Logger(logfn, fmt.Sprintf("Error: %v at step %d (%s)" , err, i, v.Name))
+				return err
 		}
+		}
+		}
+	
 	}
 	return nil 
 }
