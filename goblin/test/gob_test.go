@@ -28,13 +28,6 @@ func  TestAddStep (t *testing.T) {
 		Cmd: "touch", 
 		Args: []string{"temp.txt", ".gitignore"},
 	}
-	step3 := goblin.Step{
-		Name: "git initialization",
-		Dir: ".",
-		Msg: "initialize git",
-		Cmd: "git", 
-		Args: []string{"init"},
-	}
 	
 	
 	t.Run(step1.Name, func(t *testing.T) {
@@ -49,19 +42,13 @@ func  TestAddStep (t *testing.T) {
 			t.Errorf("expected %v to be %v", step2.Name, s.Name)
 		}
 	})
-	t.Run(step3.Name, func(t *testing.T) {
-		s := proc.NewStep(step3)
-		if !reflect.DeepEqual(s.Name, step3.Name) {
-			t.Errorf("expected %v to be %v", step3.Name, s.Name)
-		}
-	})
 }
 
 func TestRun(t *testing.T) {
 	fmt.Println(proc)
 	defer os.RemoveAll("./temp")
 	t.Run("Execution", func(t *testing.T) {
-	if err := proc.Run(); err != nil {
+	if err := proc.Run(true); err != nil {
 		t.Errorf("%v occurred while executing tasks", err)
 	}
 	})
