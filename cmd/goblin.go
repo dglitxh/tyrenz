@@ -14,12 +14,13 @@ import (
 )
 
 var timeout bool
+
 // goblinCmd represents the goblin command
 var goblinCmd = &cobra.Command{
 	Use:   "goblin",
 	Short: "A tool to run external programs and tasks",
-	Long: `This tool runs tasks and programs listed user created file with the name 
-	goblinConfig.json with an array of json map in the following format
+	Long: `This tool runs tasks and programs listed in a user created file with the name 
+	"goblinConfig.json" with an array of json map in the following format
 	 {
 		"name": "make directory",
 		"msg": "make a directory",
@@ -29,7 +30,8 @@ var goblinCmd = &cobra.Command{
   	}`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var proc goblin.Process
-		step, err := os.ReadFile("goblinConfig.json"); if err != nil {
+		step, err := os.ReadFile("goblinConfig.json")
+		if err != nil {
 			fmt.Println(err)
 		}
 		if err := json.Unmarshal([]byte(step), &proc); err != nil {
