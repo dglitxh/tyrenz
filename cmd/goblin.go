@@ -17,13 +17,16 @@ var timeout bool
 // goblinCmd represents the goblin command
 var goblinCmd = &cobra.Command{
 	Use:   "goblin",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "A tool to run external programs and tasks",
+	Long: `This tool runs tasks and programs listed user created file with the name 
+	goblinConfig.json with an array of json map in the following format
+	 {
+		"name": "make directory",
+		"msg": "make a directory",
+		"cmd": "mkdir",
+		"dir": ".",
+		"args": ["temp"]
+  	}`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var proc goblin.Process
 		step, err := os.ReadFile("goblinConfig.json"); if err != nil {
