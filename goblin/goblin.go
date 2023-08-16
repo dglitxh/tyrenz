@@ -35,10 +35,40 @@ func (p *Process) NewStep(s Step) Step {
 	return step
 }
 
-func ScanText() {
+func ScanText(p *Process) error {
 	var reader *bufio.Reader = bufio.NewReader(os.Stdin)
+	var name string
+	var msg string
+	var cmd string
+	var dir string
+	var args []string
+	var err error
 	for {
-		reader.ReadLine()
+		name, err = reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		msg, err = reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		dir, err = reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		cmd, err = reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		// args, err = append(args, ) reader.ReadString('\n'); if err != nil {
+		// fmt.Println(err)
+		// return err
+		// }
+
 	}
 }
 
