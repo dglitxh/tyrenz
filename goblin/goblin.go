@@ -1,6 +1,7 @@
 package goblin
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -32,6 +33,13 @@ func (p *Process) NewStep(s Step) Step {
 	}
 	*p = append(*p, step)
 	return step
+}
+
+func ScanText() {
+	var reader *bufio.Reader = bufio.NewReader(os.Stdin)
+	for {
+		reader.ReadLine()
+	}
 }
 
 func (s Step) TimeOutExecute() error {
