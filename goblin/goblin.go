@@ -78,14 +78,14 @@ func ScanText(p *Process) error {
 		}
 		args = strings.Split(argstr, ",")
 		step := Step{
-			Name: name,
-			Msg:  msg,
-			Dir:  dir,
-			Cmd:  cmd,
+			Name: strings.TrimSuffix(name, "\n"),
+			Msg:  strings.TrimSuffix(msg, "\n"),
+			Dir:  strings.TrimSuffix(dir, "\n"),
+			Cmd:  strings.TrimSuffix(cmd, "\n"),
 			Args: args,
 		}
 		p.NewStep(step)
-		fmt.Println("Enter the name of your command")
+		fmt.Println("")
 	}
 }
 
