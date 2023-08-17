@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/dglitxh/tyrenz/helpers"
@@ -42,33 +43,49 @@ func ScanText(p *Process) error {
 	var cmd string
 	var dir string
 	var args []string
+	var argstr string
 	var err error
 	for {
+		fmt.Println("Enter the name of your command: ")
 		name, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
+		fmt.Println("Enter information your command: ")
 		msg, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
+		fmt.Println("Enter your working directory: ")
 		dir, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
+		fmt.Println("enter the first word in command eg: git, python, go")
 		cmd, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
-		// args, err = append(args, ) reader.ReadString('\n'); if err != nil {
-		// fmt.Println(err)
-		// return err
-		// }
-
+		fmt.Println("Enter command args, each separated by a comma.")
+		argstr, err = reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		args = strings.Split(argstr, ",")
+		step := Step{
+			Name: name,
+			Msg:  msg,
+			Dir:  dir,
+			Cmd:  cmd,
+			Args: args,
+		}
+		p.NewStep(step)
+		fmt.Println("Enter the name of your command")
 	}
 }
 
