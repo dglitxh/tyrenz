@@ -85,7 +85,8 @@ func ScanText(p *Process) error {
 			Args: args,
 		}
 		p.NewStep(step)
-		fmt.Println("")
+		fmt.Println("Are you done? press 'N' to add new step or 'Y' to continue")
+		reader.ReadLine()
 	}
 }
 
