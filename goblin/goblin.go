@@ -86,8 +86,17 @@ func ScanText(p *Process) error {
 		}
 		p.NewStep(step)
 		fmt.Println("Are you done? press 'N' to add new step or 'Y' to continue")
-		reader.ReadLine()
+		quit, err := reader.ReadString('\n')
+		if err != nil {
+			return err
+		}
+		quit = strings.TrimSuffix(quit, "\n")
+		quit = strings.ToUpper(quit)
+		if quit == "Y" {
+			break
+		}
 	}
+	return nil
 }
 
 func (s Step) TimeOutExecute() error {
