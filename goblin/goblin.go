@@ -3,6 +3,7 @@ package goblin
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -34,6 +35,19 @@ func (p *Process) NewStep(s Step) Step {
 	}
 	*p = append(*p, step)
 	return step
+}
+
+func (p *Process) ReadConfig() error {
+	step, err := os.ReadFile("goblinConfig.json")
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	if err := json.Unmarshal([]byte(step), p); err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
 func ScanInput(p *Process) error {
