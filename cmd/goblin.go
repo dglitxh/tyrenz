@@ -10,6 +10,7 @@ import (
 )
 
 var timeout bool
+var input bool
 
 // goblinCmd represents the goblin command
 var goblinCmd = &cobra.Command{
@@ -26,12 +27,18 @@ var goblinCmd = &cobra.Command{
   	}`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var proc goblin.Process
+		if input {
+			proc.ScanInput()
+		} else {
+			proc.ReadConfig()
+		}
 		proc.Run(timeout)
 	},
 }
 
 func init() {
 	goblinCmd.Flags().BoolVarP(&timeout, "timeout", "t", false, "sets a timeout for eache process")
+	goblinCmd.Flags().BoolVarP(&input, "input", "i", false, "get input from user and skip config read.")
 	rootCmd.AddCommand(goblinCmd)
 
 	// Here you will define your flags and configuration settings.
