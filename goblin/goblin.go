@@ -60,7 +60,7 @@ func (p *Process) ScanInput() error {
 	var argstr string
 	var err error
 	for {
-		fmt.Println("Enter the name of your command: ")
+		fmt.Println("Enter a descriptive for your command: ")
 		name, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
@@ -90,12 +90,17 @@ func (p *Process) ScanInput() error {
 			fmt.Println(err)
 			return err
 		}
+		argstr = strings.TrimSuffix(argstr, "\n")
+		name = strings.TrimSuffix(name, "\n")
+		msg = strings.TrimSuffix(msg, "\n")
+		dir = strings.TrimSuffix(dir, "\n")
+		cmd = strings.TrimSuffix(cmd, "\n")
 		args = strings.Split(argstr, ",")
 		step := Step{
-			Name: strings.TrimSuffix(name, "\n"),
-			Msg:  strings.TrimSuffix(msg, "\n"),
-			Dir:  strings.TrimSuffix(dir, "\n"),
-			Cmd:  strings.TrimSuffix(cmd, "\n"),
+			Name: strings.TrimSpace(name),
+			Msg:  strings.TrimSpace(msg),
+			Dir:  strings.TrimSpace(dir),
+			Cmd:  strings.TrimSpace(cmd),
 			Args: args,
 		}
 		p.NewStep(step)
