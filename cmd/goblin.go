@@ -5,6 +5,10 @@ Copyright © 2023 ydzly <EMAIL ADDRESS>
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
+	"os"
+
 	"github.com/dglitxh/tyrenz/goblin"
 	"github.com/spf13/cobra"
 )
@@ -27,10 +31,18 @@ var goblinCmd = &cobra.Command{
   	}`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var proc goblin.Process
+		f, err := os.OpenFile("goblinConfig.json", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			os.Exit(1)
+		}
+		proc.ReadConfig()
 		if input {
 			proc.ScanInput()
-		} else {
-			proc.ReadConfig()
+			j, err := json.MarshalIndent(proc, " ", " ")
+			if err != nil {
+				fmt.Println(err)
+			}
+			os.WriteFile(f.Name(), j, 0664)
 		}
 		proc.Run(timeout)
 	},
