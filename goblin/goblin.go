@@ -64,7 +64,7 @@ func ScanText(p *Process) error {
 			fmt.Println(err)
 			return err
 		}
-		fmt.Println("enter the first word in command eg: git, python, go")
+		fmt.Println("enter the command eg: git, python, go")
 		cmd, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
