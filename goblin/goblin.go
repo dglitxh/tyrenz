@@ -50,7 +50,7 @@ func (p *Process) ReadConfig() error {
 	return nil
 }
 
-func ScanInput(p *Process) error {
+func (p *Process) ScanInput() error {
 	var reader *bufio.Reader = bufio.NewReader(os.Stdin)
 	var name string
 	var msg string
