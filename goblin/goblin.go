@@ -36,7 +36,7 @@ func (p *Process) NewStep(s Step) Step {
 	return step
 }
 
-func ScanText(p *Process) error {
+func ScanInput(p *Process) error {
 	var reader *bufio.Reader = bufio.NewReader(os.Stdin)
 	var name string
 	var msg string
