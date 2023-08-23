@@ -60,7 +60,7 @@ func (p *Process) ScanInput() error {
 	var argstr string
 	var err error
 	for {
-		fmt.Println("Enter a descriptive for your command: ")
+		fmt.Println("Enter a descriptive name for your command: ")
 		name, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
@@ -110,6 +110,7 @@ func (p *Process) ScanInput() error {
 			return err
 		}
 		quit = strings.TrimSuffix(quit, "\n")
+		quit = strings.TrimSpace(quit)
 		quit = strings.ToUpper(quit)
 		if quit == "Y" {
 			break
