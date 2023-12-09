@@ -12,13 +12,14 @@ type InMemStore struct {
 	Pomodoros []Config
 }
 
-func (st *InMemStore) Create (c Config) (int, error){
+func (st *InMemStore) Create(c Config) (int, error) {
 	st.Lock()
 	defer st.Unlock()
-	c.ID = len(st.Pomodoros)+1
+	c.ID = len(st.Pomodoros) + 1
 	st.Pomodoros = append(st.Pomodoros, c)
 	return c.ID, nil
 }
+
 
 func (st *InMemStore) Update (c Config) (Config, error) {
 	st.Lock()
@@ -43,7 +44,7 @@ func (st *InMemStore) GetBreaks () int {
 	return num
 }
 
-func (st *InMemStore) GetById (id int) (Config, error) {
+func (st *InMemStore) GetById(id int) (Config, error) {
 	st.Lock()
 	defer st.Unlock()
 	if id < 0 {
@@ -52,7 +53,7 @@ func (st *InMemStore) GetById (id int) (Config, error) {
 	return st.Pomodoros[id-1], nil
 }
 
-func (st *InMemStore) Delete (id int) error {
+func (st *InMemStore) Delete(id int) error {
 	st.Lock()
 	defer st.Unlock()
 	var confs []Config
@@ -68,7 +69,7 @@ func (st *InMemStore) Delete (id int) error {
 	return nil
 }
 
-func (st *InMemStore) GetCompleted () []Config {
+func (st *InMemStore) GetCompleted() []Config {
 	st.Lock()
 	defer st.Unlock()
 	var completed []Config

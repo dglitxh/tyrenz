@@ -40,7 +40,7 @@ func (inst *Instance) New() (*App, error) {
 			helpers.Logger(fn, "Error @ new widget")
 			return nil, err
 		}
-	b, err := NewButtonSet(ctx, inst, w, redrawCh, errorCh)
+	b, err := inst.NewButtonSet(ctx, w, redrawCh, errorCh)
 		if err != nil {
 			helpers.Logger(fn, "Error @j newbutton set")
 			return nil, err
