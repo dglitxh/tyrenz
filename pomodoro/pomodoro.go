@@ -37,12 +37,12 @@ func (inst *Instance) New() (*App, error) {
 
 	w, err := NewWidgets(ctx, errorCh)
 		if err != nil {
-			helpers.Logger("Error @ new widget")
+			helpers.Logger(fn, "Error @ new widget")
 			return nil, err
 		}
 	b, err := inst.NewButtonSet(ctx, w, redrawCh, errorCh)
 		if err != nil {
-			helpers.Logger("Error @j newbutton set")
+			helpers.Logger(fn, "Error @j newbutton set")
 			return nil, err
 		}
 
@@ -90,7 +90,7 @@ func (a *App) Run() error {
 		select {
 			case <-a.redrawCh:
 			if err := a.controller.Redraw(); err != nil {
-				helpers.Logger(err.Error(), ":  app redraw")
+				helpers.Logger(fn, err.Error(), ":  app redraw")
 				return err
 			}
 			case <-ticker.C:
@@ -99,11 +99,11 @@ func (a *App) Run() error {
 				}
 			case err := <-a.errorCh:
 				if err != nil {
-					helpers.Logger(err.Error(), ":  app runner")
+					helpers.Logger(fn, err.Error(), ":  app runner")
 					return err
 				}
 			case <-a.ctx.Done():
-				helpers.Logger("done @ app")
+				helpers.Logger(fn, "done @ app")
 				return nil
 			
 		}

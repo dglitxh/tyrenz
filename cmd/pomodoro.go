@@ -1,5 +1,6 @@
 /*
-Copyright © 2023 pomoCmd
+Copyright © 2023 ydzly
+
 */
 package cmd
 
@@ -7,7 +8,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dglitxh/tyrenz/helpers"
 	"github.com/dglitxh/tyrenz/pomodoro"
 	"github.com/spf13/cobra"
 )
@@ -20,8 +20,8 @@ var longbrk int
 var pomodoroCmd = &cobra.Command{
 	Use:   "pomodoro",
 	Short: "A Simple yet powerful pomodoro timer",
-	Long: `This app is a simple pomodoro timer with a simple interface. you can specify time intervals 
-	      pomodoro, long and short breaks. Although there is a default duration which is widely used.`,
+	Long: `A pomodoro timer with a simple interface. Easily specify time intervals with flags.
+	       Default timing is used if not specified.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		i := &pomodoro.Instance{}
 		s := pomodoro.UserSpecs{
@@ -34,7 +34,6 @@ var pomodoroCmd = &cobra.Command{
 		app, err := inst.New()
 
 		if err != nil {
-			helpers.Logger("default state for start error please help me.")
 			fmt.Println(err)
 		}
 		app.Run()
