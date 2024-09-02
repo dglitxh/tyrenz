@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 ydzly <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -13,27 +12,32 @@ import (
 
 var allow bool
 var dir string
+
 // spydeyCmd represents the spydey command
 var spydeyCmd = &cobra.Command{
 	Use:   "spydey",
 	Short: "A powerful file system crawler.",
 	Long: `A cutting edge file system crawling cli applications that can 
 	create, search, crawl and many more 
-  **actions include [crawl, find]`,
+  **actions include [crawl, find]
+   
+  Usage: spydey find <filename> 
+         spydey crawl `,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) > 0 {
 			switch args[0] {
-				case "find": 
-					if err := checkArgs(args, "please add filename to search"); err == nil {
-						spydey.Find(args[1], dir)
-					} else {
-						fmt.Println(err)
-					}
-				case "crawl":
-					spydey.Crawl(allow, dir)
-				default:
-					fmt.Println("Please add a valid action.")
-		}
+			case "find":
+				if err := checkArgs(args, "please add filename to search"); err == nil {
+					spydey.Find(args[1], dir)
+				} else {
+					fmt.Println(err)
+				}
+			case "crawl":
+				spydey.Crawl(allow, dir)
+			default:
+				fmt.Println("Please add a valid action.")
+			}
 		} else {
 			fmt.Println("Please add an action \n  **actions include [crawl, find]")
 		}
