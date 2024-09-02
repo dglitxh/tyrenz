@@ -11,14 +11,13 @@ import (
 	"github.com/mum4k/termdash/terminal/terminalapi"
 )
 
-
 type App struct {
-	ctx context.Context
+	ctx        context.Context
 	controller *termdash.Controller
-	redrawCh chan bool
-	errorCh chan error
-	term *tcell.Terminal
-	size image.Point
+	redrawCh   chan bool
+	errorCh    chan error
+	term       *tcell.Terminal
+	size       image.Point
 }
 
 func (inst *Instance) New() (*App, error) {
@@ -30,21 +29,19 @@ func (inst *Instance) New() (*App, error) {
 		}
 	}
 
-	
-
 	redrawCh := make(chan bool)
 	errorCh := make(chan error)
 
 	w, err := NewWidgets(ctx, errorCh)
-		if err != nil {
-			helpers.Logger(fn, "Error @ new widget")
-			return nil, err
-		}
+	if err != nil {
+		helpers.Logger(fn, "Error @ new widget")
+		return nil, err
+	}
 	b, err := NewButtonSet(ctx, inst, w, redrawCh, errorCh)
-		if err != nil {
-			helpers.Logger(fn, "Error @j newbutton set")
-			return nil, err
-		}
+	if err != nil {
+		helpers.Logger(fn, "Error @j newbutton set")
+		return nil, err
+	}
 
 	term, err := tcell.New()
 	if err != nil {
@@ -56,17 +53,17 @@ func (inst *Instance) New() (*App, error) {
 	}
 
 	controller, err := termdash.NewController(term, c,
-	termdash.KeyboardSubscriber(quitter))
+		termdash.KeyboardSubscriber(quitter))
 	if err != nil {
 		return nil, err
 	}
 
 	return &App{
-		ctx: ctx,
+		ctx:        ctx,
 		controller: controller,
-		redrawCh: redrawCh,
-		errorCh: errorCh,
-		term: term,
+		redrawCh:   redrawCh,
+		errorCh:    errorCh,
+		term:       term,
 	}, nil
 }
 
@@ -84,28 +81,28 @@ func (a *App) resize() error {
 func (a *App) Run() error {
 	defer a.term.Close()
 	defer a.controller.Close()
-	ticker := time.NewTicker(2*time.Second)
+	ticker := time.NewTicker(2 * time.Second)
 	defer ticker.Stop()
 	for {
 		select {
-			case <-a.redrawCh:
+		case <-a.redrawCh:
 			if err := a.controller.Redraw(); err != nil {
 				helpers.Logger(fn, err.Error(), ":  app redraw")
 				return err
 			}
-			case <-ticker.C:
-				if err := a.resize(); err != nil {
-					return err
-				}
-			case err := <-a.errorCh:
-				if err != nil {
-					helpers.Logger(fn, err.Error(), ":  app runner")
-					return err
-				}
-			case <-a.ctx.Done():
-				helpers.Logger(fn, "done @ app")
-				return nil
-			
+		case <-ticker.C:
+			if err := a.resize(); err != nil {
+				return err
+			}
+		case err := <-a.errorCh:
+			if err != nil {
+				helpers.Logger(fn, err.Error(), ":  app runner")
+				return err
+			}
+		case <-a.ctx.Done():
+			helpers.Logger(fn, "done @ app")
+			return nil
+
 		}
 	}
 }

@@ -14,14 +14,14 @@ import (
 )
 
 type widgets struct {
-	donTimer *donut.Donut
-	disType *segmentdisplay.SegmentDisplay
-	txtInfo *text.Text
-	txtTimer *text.Text
+	donTimer       *donut.Donut
+	disType        *segmentdisplay.SegmentDisplay
+	txtInfo        *text.Text
+	txtTimer       *text.Text
 	updateDonTimer chan []int
-	updateTxtInfo chan string
+	updateTxtInfo  chan string
 	updateTxtTimer chan string
-	updateTxtType chan string
+	updateTxtType  chan string
 }
 
 type Buttons struct {
@@ -48,7 +48,7 @@ func (w *widgets) Update(timer []int, txtType, txtInfo, txtTimer string,
 
 func NewWidgets(ctx context.Context, errorCh chan<- error) (*widgets, error) {
 	w := &widgets{}
-	dftext :=  "Press start to initiate next event..."
+	dftext := "Press start to initiate next event..."
 	var err error
 	w.updateDonTimer = make(chan []int)
 	w.updateTxtType = make(chan string)
@@ -89,13 +89,13 @@ func NewText(ctx context.Context, dftext string, updateText <-chan string,
 	go func() {
 		for {
 			select {
-				case t := <-updateText:
-					txt.Reset()
-					errorCh <- txt.Write(t)
-				case <-ctx.Done():
-					return
+			case t := <-updateText:
+				txt.Reset()
+				errorCh <- txt.Write(t)
+			case <-ctx.Done():
+				return
 			}
-		}	
+		}
 	}()
 	return txt, nil
 }
@@ -104,7 +104,7 @@ func NewSegmentDisplay(ctx context.Context, updateText <-chan string,
 	errorCh chan<- error) (*segmentdisplay.SegmentDisplay, error) {
 	sd, err := segmentdisplay.New()
 	sd.Write([]*segmentdisplay.TextChunk{
-		segmentdisplay.NewChunk("Welcome"), })
+		segmentdisplay.NewChunk("Welcome")})
 	if err != nil {
 		helpers.Logger(fn, "Seg Disp error")
 		return nil, err
@@ -112,17 +112,17 @@ func NewSegmentDisplay(ctx context.Context, updateText <-chan string,
 	go func() {
 		for {
 			select {
-				case t := <-updateText:
-					if t == "" {
-						t = " "
-					}
-					errorCh <- sd.Write([]*segmentdisplay.TextChunk{
-						segmentdisplay.NewChunk(t),
-					})
-				case <-ctx.Done():
-					return
+			case t := <-updateText:
+				if t == "" {
+					t = " "
 				}
+				errorCh <- sd.Write([]*segmentdisplay.TextChunk{
+					segmentdisplay.NewChunk(t),
+				})
+			case <-ctx.Done():
+				return
 			}
+		}
 	}()
 	return sd, nil
 }
@@ -133,30 +133,30 @@ func NewDonut(ctx context.Context, donUpdater <-chan []int,
 		donut.Clockwise(),
 		donut.ShowTextProgress(),
 		donut.CellOpts(cell.FgColor(cell.ColorGreen)),
-		)
-		if err != nil {
-			helpers.Logger(fn, "donut error : NewDonut")
-			return nil, err
+	)
+	if err != nil {
+		helpers.Logger(fn, "donut error : NewDonut")
+		return nil, err
+	}
+	go func() {
+		for {
+			select {
+			case d := <-donUpdater:
+				if d[0] >= d[1] {
+					err := don.Absolute(d[1], d[0])
+					if err != nil {
+						helpers.Logger(fn, err.Error(), "donut err still")
+						errorCh <- err
+					}
+
+				}
+			case <-ctx.Done():
+				helpers.Logger(fn, " Donut done still!")
+				return
+			}
 		}
-		go func() {
-			for {
-				select {
-					case d := <-donUpdater:
-					if d[0] >= d[1] {
-						err := don.Absolute(d[1], d[0])
-						if err != nil {
-							helpers.Logger(fn, err.Error(), "donut err still")
-							errorCh <- err
-						}
-						
-					}
-					case <-ctx.Done():
-						helpers.Logger(fn, " Donut done still!")
-						return
-					}
-				}	
-		}()
-		return don, nil
+	}()
+	return don, nil
 }
 
 func NewButtonSet(ctx context.Context, config *Instance,
@@ -168,31 +168,29 @@ func NewButtonSet(ctx context.Context, config *Instance,
 			return
 		}
 		start := func(i Config) {
-		i.State = StateRunning
-		config.Conf.State = i.State
-		message := "Take a break"
-		if i.Category == CatPomodoro {
-			message = "Focus on your task"
+			i.State = StateRunning
+			config.Conf.State = i.State
+			message := "Take a break"
+			if i.Category == CatPomodoro {
+				message = "Focus on your task"
+			}
+			helpers.Logger(fn, "Timer started...")
+			w.Update([]int{}, i.Category, message, "", redrawCh)
 		}
-		helpers.Logger(fn, "Timer started...")
-	w.Update([]int{}, i.Category, message, "", redrawCh)
-	}
-	end := func(i Config) {
-		w.Update([]int{}, "Idle", "Press start button to intiate next event", "", redrawCh)
-	}
+		end := func(i Config) {
+			w.Update([]int{}, "Idle", "Press start button to intiate next event", "", redrawCh)
+		}
 
-	periodic := func(i Config) {
-		w.Update(
-		[]int{int(i.Duration/time.Minute), int(i.TimeElapsed/time.Minute)},
-		"", "",
-		fmt.Sprint(i.Duration-i.TimeElapsed)+" left",
-		redrawCh,
-		)
-	}
+		periodic := func(i Config) {
+			w.Update(
+				[]int{int(i.Duration / time.Minute), int(i.TimeElapsed / time.Minute)},
+				"", "",
+				fmt.Sprint(i.Duration-i.TimeElapsed)+" left",
+				redrawCh,
+			)
+		}
 		errorCh <- Start(ctx, config, start, periodic, end)
 	}
-
-	
 
 	pauseInterval := func() {
 		_, err := config.Action.GetById(config.Conf.ID)
@@ -205,27 +203,27 @@ func NewButtonSet(ctx context.Context, config *Instance,
 				return
 			}
 			errorCh <- err
-			return 
+			return
 		}
 		w.Update([]int{}, "", "Paused... press start to continue", "", redrawCh)
 	}
 
 	btStart, err := button.New("(s)tart", func() error {
 		go startInterval()
-			return nil
-		},
+		return nil
+	},
 		button.GlobalKey('s'),
 		button.WidthFor("(p)ause"),
 		button.Height(2),
 	)
 	if err != nil {
-			return nil, err
+		return nil, err
 	}
 
 	btPause, err := button.New("(p)ause", func() error {
 		go pauseInterval()
-			return nil
-		},
+		return nil
+	},
 		button.FillColor(cell.ColorNumber(220)),
 		button.GlobalKey('p'),
 		button.Height(2),
